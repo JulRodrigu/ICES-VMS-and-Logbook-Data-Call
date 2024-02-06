@@ -12,7 +12,7 @@ for(d in 1:1991){
   eorpa <- rbind(eorpa, europa@polygons[[d]]@Polygons[[1]]@coords, c(NA, NA))
 }
 
-
+#sdf
 # 2 Clean the TACSAT and EFLALO data  ----------------------------------------------------------------------------------
  
 #  Looping through the data years
