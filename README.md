@@ -8,7 +8,7 @@ In Rstudio go to files -> New Project... -> Version Control -> Git (if you dont 
 - Browse to your desired folder and add this Reposity URL: https://github.com/jepol77/ICES-VMS-and-Logbook-Data-Call.git
 - You now have all the necessary scripts to complete the datacall.
 - If you already have cleaned tacsateflalo, go directly to step 2.1. If you already have a merged tacsateflalo, go directly to step 2.4.
-- A few things changed since the 2023 datacall, most importantly: the R package sp is no longer used. A function that takes care of multi gear/metier etc. trips are added to 2.1, please check if appropiate for your data. A new variable "LE_SEG" is used - this divides the dataset into different fleet segments with similar fishing patterns, please check if appropiate for your data. Gear wdith is calculated based on the method by Eigaard and al. 2016. From this, Swept area (m2) is also calculated. 
+- A few things changed since the 2023 datacall, most importantly: the R package sp is no longer used. A function that takes care of multi gear/metier etc. trips are added to 2.1, please check if appropiate for your data. A new variable "LE_SEG" is used - this divides the dataset into different fleet segments with similar fishing patterns, please check if appropiate for your data. Gear wdith is calculated based on the method by Eigaard and al. 2016. From this, Swept area (m2) is also calculated. Habitats from EUseaMap 2023 is added to the data in 2.4
 
 0_global.R
 - Change the path to where you will work with the data
