@@ -8,7 +8,7 @@ data(ICESareas)
 data(europa)
 
 # 2 Clean the TACSAT and EFLALO data  ----------------------------------------------------------------------------------
- year <- 2018
+ year <- 2023
 #  Looping through the data years
 for(year in yearsToSubmit){
   print(year)

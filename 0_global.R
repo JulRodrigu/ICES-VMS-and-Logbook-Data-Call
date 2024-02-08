@@ -73,7 +73,7 @@ visualInspection          <- FALSE
 # other options
 # linkEflaloTacsat          <- c("day","ICESrectangle","trip")
 # linkEflaloTacsat          <- c("ICESrectangle","trip")
-linkEflaloTacsat          <- c("day","trip")
+linkEflaloTacsat          <-  c("day","trip")
 # linkEflaloTacsat          <- c("trip")
 
 
