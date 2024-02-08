@@ -3,10 +3,12 @@ This repository has been developed incollaboration with the ICES working group W
 
 Users please note: this R-script is offered as an aid for countries to use and is not mandatory. ICES cannot take responsibility for any mistakes, updates or corrections to the R-script. The script has been, and is being developed, as a community driven initiative to help guide data submitters in an iterative way to meet the ICES VMS/Log book data call. The responsibility lies with individual countries to meet the ICES Data call for VMS/Log book data.
 
-The following will provide a method on how to complete the SFD datacall using R and Rstudio on a windows computer.
+The following will provide a method on how to complete the SFD datacall using R and Rstudio on a windows computer. 
 In Rstudio go to files -> New Project... -> Version Control -> Git (if you dont already have git, download and install it and add it to Rstudio in Tools -> Global Options -> Git/SVN)
 - Browse to your desired folder and add this Reposity URL: https://github.com/jepol77/ICES-VMS-and-Logbook-Data-Call.git
 - You now have all the necessary scripts to complete the datacall.
+- If you already have cleaned tacsateflalo, go directly to step 2.1. If you already have a merged tacsateflalo, go directly to step 2.4.
+- A few things changed since the 2023 datacall, most importantly: the R package sp is no longer used. A function that takes care of multi gear/metier etc. trips are added to 2.1, please check if appropiate for your data. A new variable "LE_SEG" is used - this divides the dataset into different fleet segments with similar fishing patterns, please check if appropiate for your data. Gear wdith is calculated based on the method by Eigaard and al. 2016. From this, Swept area (m2) is also calculated. 
 
 0_global.R
 - Change the path to where you will work with the data
