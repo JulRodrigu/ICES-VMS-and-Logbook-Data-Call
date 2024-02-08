@@ -295,20 +295,20 @@ for(year in yearsToSubmit){
     data
   }
   
-  # Main script
-  idxkg <- get_indices("", "KG", eflalo)
-  idxeur <- get_indices("", "EURO", eflalo)
-  idxoth <- setdiff(1:ncol(eflalo), c(idxkg, idxeur))
-  eflalo <- eflalo[, c(idxoth, idxkg, idxeur)]
-  
-  specs <- get_species(eflalo)
-  specBounds <- get_bounds(specs, eflalo)
-  specBounds <- cbind(specs, specBounds)
-  specBounds[is.na(specBounds[, 2]), 2] <- "0"
-  
-  idx <- unlist(lapply(specs, function(x) get_indices(x, "KG", eflalo)))
-  
-  eflalo <- replace_outliers(eflalo, specBounds, idx)
+  # Main script - remove change of outliers - should be checked in the logbook instead. 
+  # idxkg <- get_indices("", "KG", eflalo)
+  # idxeur <- get_indices("", "EURO", eflalo)
+  # idxoth <- setdiff(1:ncol(eflalo), c(idxkg, idxeur))
+  # eflalo <- eflalo[, c(idxoth, idxkg, idxeur)]
+  # 
+  # specs <- get_species(eflalo)
+  # specBounds <- get_bounds(specs, eflalo)
+  # specBounds <- cbind(specs, specBounds)
+  # specBounds[is.na(specBounds[, 2]), 2] <- "0"
+  # 
+  # idx <- unlist(lapply(specs, function(x) get_indices(x, "KG", eflalo)))
+  # 
+  # eflalo <- replace_outliers(eflalo, specBounds, idx)
   
   
 # 2.3.3  Remove non-unique trip numbers -----------------------------------------------------------------------------
@@ -408,7 +408,6 @@ for(year in yearsToSubmit){
  
  
 #   Save the remrecsEflalo file 
-  print()
   save(
     remrecsEflalo,
     file = file.path(outPath, paste0("remrecsEflalo", year, ".RData"))
