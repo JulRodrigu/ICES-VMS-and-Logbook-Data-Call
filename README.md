@@ -5,7 +5,7 @@ Users please note: this R-script is offered as an aid for countries to use and i
 
 The following will provide a method on how to complete the SFD datacall using R and Rstudio on a windows computer.
 In Rstudio go to files -> New Project... -> Version Control -> Git (if you dont already have git, download and install it and add it to Rstudio in Tools -> Global Options -> Git/SVN)
-- Browse to your desired folder and add this Reposity URL: [https://github.com/ices-eg/ICES-VMS-and-Logbook-Data-Call.git](https://github.com/jepol77/ICES-VMS-and-Logbook-Data-Call.git)
+- Browse to your desired folder and add this Reposity URL: https://github.com/jepol77/ICES-VMS-and-Logbook-Data-Call.git
 - You now have all the necessary scripts to complete the datacall.
 
 0_global.R
