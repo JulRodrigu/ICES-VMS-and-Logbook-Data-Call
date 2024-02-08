@@ -33,7 +33,6 @@ In Rstudio go to files -> New Project... -> Version Control -> Git (if you dont 
 - Make a new speedarr fil (fix(speedaar)), using appropiate speed values
 - Run for all years to merge tacsat and eflalo. The merged tacsatEflalo contain all fishing pings with eflalo information. 
 
-<<<<<<< HEAD
 2.4_add_info_tacsatEflalo.R
 - Download EUSeaMap_2023, either from emodnet and do some calculations or directly from dtu: https://figshare.com/s/46ed591ca29f87c53311 
 - Add habitat and swepat area to each fishing ping. 
@@ -46,12 +45,5 @@ In Rstudio go to files -> New Project... -> Version Control -> Git (if you dont 
 - Check if all records are valid
 - Submit data to ICES database. 
 =======
-
-
-
-
-
->>>>>>> 5b98d8982a979334590a01a676a1e9f25180363b
-
 
 For questions or to provide feedback please contact ICES accessions: accessions@ices.dk
