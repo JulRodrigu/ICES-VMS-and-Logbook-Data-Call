@@ -22,26 +22,11 @@
 #-------------------------------------------------------------------------------
 
 
-#- Clear workspace
 rm(list=ls())
 
-library(vmstools) #- download from www.vmstools.org
-library(Matrix)   #- available on CRAN
-library(ggplot2)  #- available on CRAN
-library(dplyr)    #- available on CRAN
-library(doBy)
-library(mixtools)
-library(tidyr)
-library(glue)
-library(gt)
-library(raster)
-library(sf)
-library(data.table)
-library(progressr)
-library(units)
-library(geosphere)
-library(purrr) 
-
+#Download pacman, and let that install the needed packages
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(vmstools, sf, data.table, raster, terra, mapview, Matrix, dplyr, doBy, mixtools, tidyr, glue, gt, progressr, geosphere, purrr)
 
 
 #- Settings paths
@@ -53,6 +38,13 @@ dataPath  <- paste0(path, "data/eflalo/")      #Location where you store tacsat 
 outPath   <- paste0(path, "Results/")    #Location where you want to store the results
 plotPath <- paste0(path, "Plots/") 
 
+dir.create(codePath, showWarnings = T)
+dir.create(dataPath, showWarnings = T)
+dir.create(outPath, showWarnings = T)
+dir.create(plotPath, showWarnings = T)
+
+
+
 #- Setting specific thresholds
 spThres       <- 20   #Maximum speed threshold in analyses in nm
 intThres      <- 5    #Minimum difference in time interval in minutes to prevent pseudo duplicates
@@ -62,7 +54,7 @@ lanThres      <- 1.5  #Maximum difference in log10-transformed sorted weights
 #- Re-run all years as we have new field for no. vessels
 yearsToSubmit <- 2009:2023
 
-
+sf::sf_use_s2(FALSE)
 '%!in%' <- function(x,y)!('%in%'(x,y))
 
 #- Decide if you want to visualy analyse speed-histograms to identify fishing activity
