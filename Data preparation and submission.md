@@ -2,10 +2,10 @@
 
 ##  [1 Installation of the required software](#part1-installation-of-required-software)
 
-### [1.1 Step 1 Installation of r](#step-1-installation-of-r)
+### [1.1 Step 1 Installation of R](#step-1-installation-of-r)
 ### [1.2 Step 2 Installation of RStudio](#step-2-installation-of-rstudio)
 ### [1.3 Step 3 Installing VMSTOOLS R package](#step-3-installing-vmstools)
-### [1.4 Step 3 Installing ICES R packages](#step-4-installing-ICES R packages)
+### [1.4 Step 4: Installing ICES R packages](#step-4-installing-ices-r-packages)
 
 ##  [2 Proposed workflow R code](#part-2-proposed-workflow-r-code)
 
@@ -13,37 +13,35 @@
 ### [2  Data analysis](#2-data-analysis)
 ### [3  Data submission](#3-data-submission)
  
-## [4  Contacts](#4-contacts) 
+## [3  Contacts](#3-contacts) 
 ## [4  Changelog](#4-changelog) 
 
+## [Annex 1 Format specification for VMS data (VE)](#ve-table-format)
+## [Annex 2 Format specification for Logbook data (LE)](#le-table-format)
 
-# Part1. Installation of required software 
+# Part 1. Installation of required software 
 
-This document is designed to aid analysts streamline the process of extracting VMS data in accordance with requirements of the ICES VMS data call.
+This document is designed to aid analysts streamline the processing of VMS and logbook data in accordance with requirements of the ICES data call.
 
-Part 1 of the document provides guidelines for installing all the software necessary for data manipulation and aggregation into the requested format. The software used, R and RStudio, are available as freeware.
+Part 1 of the document provides guidelines for installing all the software necessary for data manipulation and aggregation into the requested format. The software used, R and RStudio, are freely available.
 
-The document is designed to aid all users, regardless of their experience using R. The steps listed cover the installation of R and RStudio and detailed information will be provided to cover all stages of the installation process to ensure success. Depending on your skills you might want to jump some of the steps. To ensure consistency across all users we advise installing VMStoolsversion 0.76. Following these steps should enable quick and simple processing of all data.
+The document is designed to aid all users, regardless of their experience using R. The steps listed cover the installation of R and RStudio and detailed information will be provided to cover all stages of the installation process to ensure success. Depending on your skills you might want to jump some of the steps. To ensure consistency across all users we advise installing VMStools version 0.78. Following these steps should enable quick and simple processing of all data.
 
-All the instructions and code below were tested in windows versions newest than 7 and 8. However, if for any reason something is not working you can contact one of the members of our support team (emails at the end of the document).
+All the instructions and code below were tested in windows versions 10 and 11. However, if for any reason something is not working you can contact one of the members of our support team (emails at the end of the document).
 
-Please note that you need administration rights on your computer system to install an encryption software on which icesConnect depends on (Libsodium). You might need to contact your systems administrator in advance to install this software in case you do not have administrator rights.
-
-  
 ## Step 1: Installation of R
 
-(Where R is already installed (any 3.x.x 32 bits version) move to step 2)
+Where a version of R is already installed, version 4.1.0 or later, move to step 2
 
 Completion of the first two steps of these guidelines is dependent on the users computer security setting. In instances where administrator privilege is required then please ask a member of your IT/computer support team to run the first two steps for you.
  
+So let's start by instaling R; click on the link below to download R version 4.3.2.
 
-So let's start by instaling R; click on the link below to download R version 4.1.2.
+[The Comprehensive R Archive Network - R Version 4.3.2](https://cran.r-project.org/bin/windows/base/R-4.3.2-win.exe)
 
-[https://cran.r-project.org/](https://cran.r-project.org/)
+Once it is downloaded, double click on the file (.exe). Depending on your security settings you might get a pop up security warning asking if you want to Run or Cancel the installation, Click **Run**.-
 
-Once it is downloaded, double click on the file (.exe). Depending on your security settings you might get a pop up security warning asking if you want to Run or Cancel the installation, Click **Run**.
-
-- Select a language (when you select the language, bear in mind that these instructions are inEnglish)
+- Select a language (when you select the language, bear in mind that these instructions are in English)
 
 - At this point you should be on the R installation Wizard menu.Just click **Next**
 
@@ -52,100 +50,88 @@ Once it is downloaded, double click on the file (.exe). Depending on your securi
 - The menu (picture below) will appear and you will be asked to select the destination folder
 
 
-<img src="https://user-images.githubusercontent.com/11030143/154282016-fd4147f7-bc84-4c75-bfb0-7d751dc3d3de.png" alt="drawing" width="400"/>
+<img src="https://raw.githubusercontent.com/neilcampbelll/spatial/b9816dc3fe7ce82aa8aa7996422170f03faa4ac3/Screenshot%202024-01-16%20143734.png" alt="drawing" width="400"/>
  
 
-Rather than accepting the default(C:Files-4.1.2) you should click on the browse button and create a directory C:-4.2.1 this will allow you to install packages without having administrator privileges. Once you have changed the folder just click **Next**
+Rather than accepting the default(C:Files-4.3.2) you should click on the browse button and create a directory C:-4.3.2 which will allow you to install packages without having administrator privileges. Once you have changed the folder just click **Next**
 
-- In the menu "Selectcomponents" simply deselect/untick the 64-bit files. Click
-
-### Next.
-
-- Click **Next** all the menus until the end of instalation, and that's it; R is now in- stalled on thecomputer.
+- Click **Next** all the menus until the end of instalation, and that's it; R is now installed on thecomputer.
 
   
 ## Step 2: Installation of RStudio
 
 (Where Rstudio is already installed move to step 3)
 
-If you don't have administrator privilege on your computer you will need to call your IT/computer support to install R Studio.First download RStudio by clicking on the link below
+If you don't have administrator privilege on your computer you will need to call your IT/computer support to install R Studio.
 
-[https://www.rstudio.com/products/rstudio/download/](https://www.rstudio.com/products/rstudio/download/)
-
-For Window 10 (64-bit):
-
-[https://download1.rstudio.org/desktop/windows/RStudio-2021.09.2-382.exe](https://download1.rstudio.org/desktop/windows/RStudio-2021.09.2-382.exe)
+First download RStudio by [clicking on this link](https://download1.rstudio.org/electron/windows/RStudio-2022.12.0-353.exe).
 
 Once downloaded, double click on it. Depending on your security settings you might get a popup security warning asking if you want to Run or Cancel the installation, Click on **Run**. At this point you should be on the RStudio installation Wizard menu. RStudio is very easy to install so just accept all defaults and click **Next** in all the menus until the end.
 
 That's it. Step 2 is complete, RStudio is now installed.
 
+Now start Rstudio to install all the necessary R packages that vmstools depends on. 
+
   
 ## Step 3: Installing vmstools
 
-Next, download a compiled version of vmstools 0.76 by clicking the link below. Make sure you click save rather than open...
+Next, we need to download and install the vmstools library. To do this, we will need the **Devtools** library. Devtools provides functions that allow you to install packages from GitHub. If you haven’t installed it yet, you can do so by running the following command in your R console:
 
-[https://github.com/nielshintzen/vmstools/releases/download/0.76/vmstools\_0.76.zip](https://github.com/nielshintzen/vmstools/releases/download/0.76/vmstools_0.76.zip)
-
-Now start Rstudio to install all the necessary R packages that vmstools depends on. Copy the following text 
-( referenced in the workflow file [0_global.R] (https://github.com/ices-eg/wg_WGSFD/blob/test-workflow/VMS-datacall/0_global.R ) )
-```r 
-
-  install.packages(c("cluster","data.table","doBy","maps","mapdata","ma ptools","PBSmapping","sp","Matrix","ggplot2"))
+Paste:
   
-```
-
-into the console and press enter. It should start installing all the packages needed This might take two or three minutes and your console should look like this once it has finished. Please contact your system administrator if you have issues installing these packages.
-
-
-List of current workflow libraries required: 
 
 ```r 
-# Clear workspace
-rm(list=ls())
-
-library(vmstools) #- download from www.vmstools.org
-library(Matrix)   #- available on CRAN
-library(ggplot2)  #- available on CRAN
-library(dplyr)    #- available on CRAN
-library(sp)
-library(doBy)
-library(mixtools)
-library(tidyr)
-library (glue)
-library(gt)
-
+install.packages("devtools")
 ```
 
-![](RackMultipart20220215-4-1krebzr_html_87cc747119b9d5b6.jpg)
+into the console and press enter. It should start installing the Devtools package. This might take two or three minutes. Please contact your system administrator if you have issues installing these packages.
 
-To install vmstools click on the Tools tab on the main menu in RStudio. Then select Install Packages.This will trigger a pop up menu like the one below. Click on the down arrow in the 'Install from:'dialogue box and select the second option 'PackageArchive File(Zip;tar.gz)'; then browse to the vmstools zip file that you just downloaded and pressInstall.
+Once installed, you need to load the devtools package. You can do this with the library function:
 
-![](RackMultipart20220215-4-1krebzr_html_4cba68b437cc424b.png)
+```r
+library(devtools)
+```
+Now you can install the specific version of the package from GitHub using the **install_github** function. You need to provide the repository name in the format username/repo@version. In your case, the repository is *nielshintzen/vmstools* and the version is 0.78. Here’s how you can install it:
+
+```r
+install_github("nielshintzen/vmstools@0.78")
+```
+After the package is installed, you can load it using the library function:
+
+```r
+library(vmstools)
+```
+Please note that the install_github function might not work if you’re behind a firewall that blocks connections to GitHub.
+
+Next, we will install the other required libraries, which are available on CRAN. Paste the following code into your console:
+
+```r 
+# Get the list of required packages
+packages <- c("data.table", "doBy", "dplyr", "geosphere", "ggplot2",
+  "glue", "gt", "icesConnect", "icesVMS", "icesVocab",
+  "mixtools", "progressr","purrr", "raster", "sf",
+  "tidyr","tidyverse", "units")
+
+# Install them from CRAN
+install.packages(packages)
+```
 
 That's it; you now have all you need to process your data.
-
-## Step 3 Installing ICES R packages 
-
-# R packages required to be installed:
-# install.packages(c("icesVMS", "icesConnect"), repos = "https://ices-tools-prod.r-universe.dev")  
-
-library(icesVMS)
-
-
-##Get vocabulary for mandatory and fields with associated vocabulary using the DATSU API
-# install.packages("icesVocab", repos = "https://ices-tools-prod.r-universe.dev")
-
-library(icesVocab)
 
 
 # Part 2. Proposed workflow R code 
 
-Part one of these guidelines have guided you through the installation of all the software needed to process your data into the formats specified in the data call. Now, part two will focus on guiding you through the  3 blocks that comprise the workflow: 
+Part one of these guidelines have guided you through the installation of all the software needed to process your data into the formats specified in the data call. Now, part two will focus on guiding you through the blocks that comprise the workflow: 
 - [0_global.R](https://github.com/ices-eg/wg_WGSFD/blob/test-workflow/VMS-datacall/0_global.R)
 - [1_eflalo_tacsat_preprocessing.R](https://github.com/ices-eg/wg_WGSFD/blob/test-workflow/VMS-datacall/1_eflalo_tacsat_preprocessing.R)
 - [2_eflalo_tacsat_analysis_R](https://github.com/ices-eg/wg_WGSFD/blob/test-workflow/VMS-datacall/2_eflalo_tacsat_analysis_R)
 - [3_data_submission.R](https://github.com/ices-eg/wg_WGSFD/blob/test-workflow/VMS-datacall/3_data_submission.R)
+
+The key things to note are that using the workflow blocks 0, 1 and 2 to process your data **is not mandatory**, but they are a very good idea. If you have your data in a bespoke national database and feel comfortable outputting it in the required format, please feel free to do so. Using block 3 to process the submission of data to ICES is, however, very strongly urged. 
+
+VMS and logbook data are highly resolved data which carry a lot of information about the behaviours and incomes of individuals. As we are using this data for scientific purposes, and in an international context, we obviously want to protect individual anonymity as much as possible. To this end, we combine VMS data (spatio-temporal information on individual vessels) and logbook records (landed weights and values by fishing operation) and then aggregate them by metier over a 0.05-degree grid, using the "c-squares" notation system. 
+
+We will assume that you are starting with files of VMS and logbook data, formatted into the [tacsat and eflalo formats](https://github.com/ices-eg/ICES-VMS-and-Logbook-Data-Call/blob/main/EFLALO%20%26%20TACSAT%20Formats.md).
 
 The aim is to get your data converted into the format specified in ICES DATSU: [http://datsu.ices.dk/web/selRep.aspx?Dataset=145](http://datsu.ices.dk/web/selRep.aspx?Dataset=145)
 
@@ -157,7 +143,7 @@ Many of the specific functions that this workflow uses to extract and process VM
 
 Before initiating the workflow, it is first necessary that you have all VMS and landings data in the tacsat2 and eflalo2 format srespectively. If you need more information about either format you can download a document with the detailed specifications for both in the linkbelow.
 
-[https://github.com/nielshintzen/VMStools/releases/download/0.0/Exchange\_EFLALO](https://github.com/nielshintzen/VMStools/releases/download/0.0/Exchange_EFLALO2_v2-1.doc)[2\_v2-1.doc](https://github.com/nielshintzen/VMStools/releases/download/0.0/Exchange_EFLALO2_v2-1.doc)
+[https://github.com/nielshintzen/VMStools/releases/tag/0.0/Exchange_EFLALO2_v2-1.doc](https://github.com/nielshintzen/VMStools/releases/tag/0.0/Exchange_EFLALO2_v2-1.doc)
 
 If you are experiencing difficulties and your data is not yet in the tacsat and/or eflalo format please get in touch with one of the contacts at the bottom of these guidelines. Someone will get back to you and help you to rearrange your data into the specified formats allowing you to move on with the analysis.
 
@@ -176,15 +162,15 @@ As such, the first line of code starts on line 23.
 
 To make it easier to follow the guidelines we will explain the code, referencing the sections, headers (numbered) and blocks by highlighting them in bold.
 
-#- Clear workspace
+# - Clear workspace
 
 This code will just clear your work space to allow you to start afresh. Also, the packages that will be needed to run the code will be loaded into the session. If you followed the instructions in part one these should already be installed and loading them shouldn't be a problem.
 
-#- Settings paths
+# - Settings paths
 
 At this point you need to replace the paths shown in the code with your own ones.The approach used in the code is one of best practice, as everything will be in one main folder 'VMSdatacall'. This will make it very easy to navigate between folders and to backup. So, for your own convenience it is recommended that you use the default paths as listed in the code. However, it is possible to change these by simply specifying your personal destination folders and defining the chosenpath.
 
-#- Settings and specific thresholds
+# - Settings and specific thresholds
 
 The thresholds here defined will be used later in different processes throughout the code. These will include, data cleaning or definition of vessel state (i.e. fishing/not fishing). The values set for the thresholds are considered to be reasonable and unless there are particularities in your data there shouldn't be a need to change these values.
 
@@ -483,7 +469,7 @@ install.packages("icesVocab", repos = "https://ices-tools-prod.r-universe.dev")
 ### 3.5 ICES DATSU VOCABULARY CHECKS BEFORE DATA SUBMISSION
 
 The submission will not progress if the format used does not confirm to the required format and the submitter will be asked to fix the errors in order to proceed (DATSU check). 
-This piece of code performs a DATSU check (c-squares are within ICES ecoregions, vessel length categories are accepted, metier L4 and L5 are valid, country codes are correct,...).
+This piece of code performs a DATSU check (c-squares are within ICES ecoregions, vessel length categories are accepted, metier L4, L5 and L6 are valid, country codes are correct,...).
 
 Running this code will allow you to fix all the format issues ahead of data submission via an API web service:([https://datsu.ices.dk/web/screen.aspx](https://datsu.ices.dk/web/screen.aspx)) and/or manual data upload in ICES Data portal:([https://data.ices.dk/vms/manage/fileUpload](https://data.ices.dk/vms/manage/fileUpload))
 
@@ -501,17 +487,18 @@ and icesConnect:([https://cran.r-project.org/web/packages/icesConnect/index.html
 
 
 
-# 4 Contacts
+# 3 Contacts
 
-Lara Salvany:[lara.salvany@ices.dk](mailto:lara.salvany@ices.dk)
-
-Roi Martinez:[roi.martinez@cefas.co.uk](mailto:roi.martinez@cefas.co.uk)
-
-Colin Millar:[colin.millar@ices.dk](mailto:colin.millar@ices.dk)
+Patrik Jonsson:[patrik.jonsson@slus.se](mailto:patrik.jonsson@slu.se)
 
 Josefine Egekvist:[jsv@aqua.dtu.dk](mailto:jsv@aqua.dtu.dk)
 
-Niels Hintzen:[niels.hintzen@wur.nl](mailto:niels.hintzen@wur.nl)
+Roi Martinez:[roi.martinez@cefas.co.uk](mailto:roi.martinez@cefas.co.uk)
+
+Neil Campbell:[neil.campbell@ices.dk](mailto:neil.campbell@ices.dk)
+
+Josefine Egekvist:[jsv@aqua.dtu.dk](mailto:jsv@aqua.dtu.dk)
+
 
 
 
@@ -524,6 +511,71 @@ Niels Hintzen:[niels.hintzen@wur.nl](mailto:niels.hintzen@wur.nl)
 | 1 February 2019   | Update                 | Lara Salvany, ICES      |
 | 1 February 2021   | Update                 | Lara Salvany, ICES      |
 | 15 February 2022  | Update                 | Roi Martinez, UK        |
-| 22 Fbruary 2022   | Update                 | Lara Salvany, ICES      |
+| 22 February 2022  | Update                 | Lara Salvany, ICES      |
+| 13 February 2023  | Update                 | Cecilia Kvaavik, ICES   |  
+| 24 February 2023  | Update                 | Neil Campbell, ICES     |
+
+
+# Annex 1. Format specification of VMS data (VE)
+The specification of the format for VMS can be found here: [datsu.ices.dk/web/selRep.aspx?Dataset=145](https://datsu.ices.dk/web/selRep.aspx?Dataset=145)
+and in the table below
+
+
+## VE table format
+
+| **Start**|**FieldCode**           | **Datatype**      | **Code List**                                                 | **Mandatory** | **Description**                                                                                                                                     |
+|-------|---------------------|---------------|-----------------------------------------------------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1     | RecordType          | char(2)       |                                                           | M         | RecordType field consists of a 2-character code,  which defines the record type and thus the layout of the data fields included on that record. |
+| 2     | CountryCode         | char(3)       | [ISO_3166](http://vocab.ices.dk/?ref=337)                 | M         | ISO 3166-1 alpha-3 codes. The flag country  of the vessel.                                                                                      |
+| 3     | Year                | char(4)       | [Year](http://vocab.ices.dk/?ref=362)                     | M         | Year                                                                                                                                            |
+| 4     | Month               | int(2)        |                                                           | M         | Month                                                                                                                                           |
+| 5     | NoDistinctVessels   | int(5)        |                                                           | M         | Number of distinct vessels                                                                                                                      |
+| 6     | AnonymizedVesselID  | nvarchar(500) |                                                           | M         | Anonymized vessel ID: Country code + 3 digits and semicolon separated.  For example: ESP001; ESP003;                                            |
+| 7     | C-square            | nvarchar(15)  |                                                           | M         | 0.05x0.05 degree,  C-square reference XXXX:XXX:XXX:X                                                                                            |
+| 8     | MetierL4            | char(25)      | [GearTypeL4](http://vocab.ices.dk/?ref=1498)              | M         | Metier level 4                                                                                                                                  |
+| 9     | MetierL5            | char(50)      | [TargetAssemblage](http://vocab.ices.dk/?ref=1499)        | M         | Metier level 5                                                                                                                                         |
+| 10    | MetierL6            | char(40)      | [Metier6_FishingActivity](http://vocab.ices.dk/?ref=1647) | M         | Metier level 6                                                                                                                                  |
+| 11    | VesselLengthRange   | char(20)      | [VesselLengthClass](http://vocab.ices.dk/?ref=1725)       | M         | Length class for vessels used in data sampling                                                                                                  |
+| 12    | AverageFishingSpeed | float(15)     |                                                           | M         | Average fishing speed within the aggregation: year, month, c-square, vessel length category, gear code and DCF métier                           |
+| 13    | FishingHour         | float(15)     |                                                           | M         | Fishing hour calculated from VMS data (excluding non-fishing activity)                                                                          |
+| 14    | AverageInterval     | float(10)     |                                                           | M         | Average polling frequency calculated from VMS data                                                                                              |
+| 15    | AverageVesselLength | float(15)     |                                                           | M         | Average vessel length within the aggregation: year,  month, c-square, gear code and DCF metier                                                  |
+| 16    | AveragekW           | float(15)     |                                                           | M         | Average vessel power( kW) within the aggregation: year,  month, c-square, gear code and DCF metier                                              |
+| 17    | kWFishingHour       | float(15)     |                                                           | M         | kW\*Fishing hours                                                                                                                               |
+| 18    | TotWeight           | float(15)     |                                                           | M         | Total landings of all species caught in **kg**                                                                                                  |
+| 19    | TotValue            | float(15)     |                                                           |           | Total Value of all species caught in **Euro**                                                                                                   |
+| 20    | AverageGearWidth    | float(15)     |                                                           | M         | Average Gear width                                                                                                                              |
+
+M = mandatory
+
+
+# Annex 2. Format specification of Logbook data (LE)
+The specification of the format for VMS can be found here: [datsu.ices.dk/web/selRep.aspx?Dataset=145](https://datsu.ices.dk/web/selRep.aspx?Dataset=145)
+and in the table below
+
+
+## LE table format
+
+| **Start** | **FieldCode**      | **Datatype**  | **Code List**                                             | **Mandatory** | **Description**                                                                                                                                         |
+|-----------|--------------------|---------------|-----------------------------------------------------------|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1         | RecordType         | char(2)       |                                                           | M             | RecordType field consists of a 2-character code,  which defines the record type and thus the layout of the data fields included on that record.         |
+| 2         | CountryCode        | char(3)       | [ISO_3166](http://vocab.ices.dk/?ref=337)                 | M             | ISO 3166-1 alpha-3 codes. The flag country  of the vessel.                                                                                              |
+| 3         | Year               | char(4)       | [Year](http://vocab.ices.dk/?ref=362)                     | M             | Year                                                                                                                                                    |
+| 4         | Month              | int(2)        |                                                           | M             | Month                                                                                                                                                   |
+| 5         | NoDistinctVessels  | int(5)        |                                                           | M             | Number of distinct vessels                                                                                                                              |
+| 6         | AnonymizedVesselID | nvarchar(500) |                                                           | M             | Anonimyzed vessel ID: Country code + 3 digits and semicolon separated.  For example: ESP001; ESP003;                                                    |
+| 7         | ICESrectangle      | char(4)       | [StatRec](http://vocab.ices.dk/?ref=107)                  | M             | ICES Statistical Rectangle                                                                                                                              |
+| 8         | MetierL4           | char(25)      | [GearTypeL4](http://vocab.ices.dk/?ref=1498)              | M             | Metier level 4                                                                                                                                          |
+| 9         | MetierL5           | char(50)      | [TargetAssemblage](http://vocab.ices.dk/?ref=1499)        | M             | Metier level 5                                                                                                                                          |
+| 10        | MetierL6           | char(40)      | [Metier6_FishingActivity](http://vocab.ices.dk/?ref=1647) | M             | Metier level 6                                                                                                                                          |
+| 11        | VesselLengthRange  | char(20)      | [VesselLengthClass](http://vocab.ices.dk/?ref=1725)       | M             | Length class for vessels used in data sampling                                                                                                          |
+| 12        | VMSEnabled         |               | [YesNoFields](http://vocab.ices.dk/?ref=316)              |               | Yes/No                                                                                                                                                  |
+| 13        | FishingDays        | float(15)     |                                                           | M             | Number of fishing days by ICES rectangle. If a  vessel fished in several ICES squares one day, the day will be divided by the number of ICES rectangles |
+| 14        | kWFishingDays      |               |                                                           |               | kW\*FishingDays                                                                                                                                         |
+| 15        | TotWeight          | float(15)     |                                                           | M             | Total landings of all species caught in **kg**                                                                                                          |
+| 16        | TotValue           | float(15)     |                                                           |               | Total value of all species caught in **Euro**                                                                                                           |
+
+M = mandatory
+
 
 
