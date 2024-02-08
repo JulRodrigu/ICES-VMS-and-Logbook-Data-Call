@@ -43,7 +43,12 @@ In Rstudio go to files -> New Project... -> Version Control -> Git (if you dont 
 3.2_data_submission.R
 - Add categories and aggregate data
 - Check if all records are valid
-- Submit data to ICES database. 
+- Submit data to ICES database.
+
+4_plot_data
+- Make html maps of effort, value and sar
+
+
 =======
 
 For questions or to provide feedback please contact ICES accessions: accessions@ices.dk
