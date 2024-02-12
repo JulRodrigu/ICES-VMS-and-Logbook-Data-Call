@@ -5,8 +5,8 @@ p_load(data.table, dplyr, sf, mapview, stars, raster, terra, leaflet, leafem)
 
 load(file = paste0(outPath, "table1.RData")  )
 
-lst <- paste0(outPath, "tacsatEflalo_", 2009:2023, ".rds")
-te <- rbindlist(lapply(lst, readRDS), fill = T)
+# lst <- paste0(outPath, "tacsatEflalo_", 2009:2023, ".rds")
+# te <- rbindlist(lapply(lst, readRDS), fill = T)
 
 
 grd_size <- 0.05
@@ -55,9 +55,11 @@ t1[LE_SEG %like% c("SSC"), LE_SEG := "SSC"]
 ###############
 
 
+table(t1$LE_SEG)
 
 i <- t1$LE_SEG[1]
 i <- "OTB_DEF_32-69_0_0"
+i <- "OTB_CRU"
 
 ## VALUE plots
 for(i in unique(t1$LE_SEG)){
