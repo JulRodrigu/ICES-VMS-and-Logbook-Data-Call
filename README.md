@@ -3,10 +3,12 @@ This repository has been developed incollaboration with the ICES working group W
 
 Users please note: this R-script is offered as an aid for countries to use and is not mandatory. ICES cannot take responsibility for any mistakes, updates or corrections to the R-script. The script has been, and is being developed, as a community driven initiative to help guide data submitters in an iterative way to meet the ICES VMS/Log book data call. The responsibility lies with individual countries to meet the ICES Data call for VMS/Log book data.
 
-The following will provide a method on how to complete the SFD datacall using R and Rstudio on a windows computer.
+The following will provide a method on how to complete the SFD datacall using R and Rstudio on a windows computer. 
 In Rstudio go to files -> New Project... -> Version Control -> Git (if you dont already have git, download and install it and add it to Rstudio in Tools -> Global Options -> Git/SVN)
-- Browse to your desired folder and add this Reposity URL: https://github.com/ices-eg/ICES-VMS-and-Logbook-Data-Call.git
+- Browse to your desired folder and add this Reposity URL: https://github.com/jepol77/ICES-VMS-and-Logbook-Data-Call.git
 - You now have all the necessary scripts to complete the datacall.
+- If you already have cleaned tacsateflalo, go directly to step 2.1. If you already have a merged tacsateflalo, go directly to step 2.4.
+- A few things changed since the 2023 datacall, most importantly: the R package sp is no longer used. A function that takes care of multi gear/metier etc. trips are added to 2.1, please check if appropiate for your data. A new variable "LE_SEG" is used - this divides the dataset into different fleet segments with similar fishing patterns, please check if appropiate for your data. Gear wdith is calculated based on the method by Eigaard and al. 2016. From this, Swept area (m2) is also calculated. Habitats from EUseaMap 2023 is added to the data in 2.4
 
 0_global.R
 - Change the path to where you will work with the data
@@ -33,7 +35,6 @@ In Rstudio go to files -> New Project... -> Version Control -> Git (if you dont 
 - Make a new speedarr fil (fix(speedaar)), using appropiate speed values
 - Run for all years to merge tacsat and eflalo. The merged tacsatEflalo contain all fishing pings with eflalo information. 
 
-<<<<<<< HEAD
 2.4_add_info_tacsatEflalo.R
 - Download EUSeaMap_2023, either from emodnet and do some calculations or directly from dtu: https://figshare.com/s/46ed591ca29f87c53311 
 - Add habitat and swepat area to each fishing ping. 
@@ -44,14 +45,12 @@ In Rstudio go to files -> New Project... -> Version Control -> Git (if you dont 
 3.2_data_submission.R
 - Add categories and aggregate data
 - Check if all records are valid
-- Submit data to ICES database. 
+- Submit data to ICES database.
+
+4_plot_data
+- Make html maps of effort, value and sar
+
+
 =======
-
-
-
-
-
->>>>>>> 5b98d8982a979334590a01a676a1e9f25180363b
-
 
 For questions or to provide feedback please contact ICES accessions: accessions@ices.dk
