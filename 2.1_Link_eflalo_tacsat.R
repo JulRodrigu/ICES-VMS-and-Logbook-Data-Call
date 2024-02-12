@@ -4,6 +4,7 @@ for(year in yearsToSubmit){
   
   print(year)
   
+  
   load(file = paste0(outPath,paste0("/cleanEflalo",year,".RData")) )
   load(file = paste0(outPath, paste0("/cleanTacsat", year, ".RData")) )
   
@@ -14,7 +15,6 @@ for(year in yearsToSubmit){
   # Merge eflalo and tacsat =================================
   
   tacsatp <- mergeEflalo2Tacsat(eflalo,tacsat)
-  
   
   # Assign gear and length to tacsat =================================
   
@@ -27,31 +27,6 @@ for(year in yearsToSubmit){
     tacsatp[[col]] <- eflalo[[col]][match(tacsatp$FT_REF, eflalo$FT_REF)]
   }
 
-  
-  tacsatpa_LE_GEAR <- trip_assign(tacsatp, eflalo, col = "LE_GEAR", trust_logbook = T)
-  tacsatp <- rbindlist(list(tacsatp[tacsatp$FT_REF %!in% tacsatpa_LE_GEAR$FT_REF,], tacsatpa_LE_GEAR), fill = T)
-  
-  #Check if appropiate
-  
-  
-  
-  tacsatpa_LE_MSZ <- trip_assign(tacsatp, eflalo, col = "LE_MSZ", trust_logbook = T)
-  tacsatp <- rbindlist(list(tacsatp[tacsatp$FT_REF %!in% tacsatpa_LE_MSZ$FT_REF,], tacsatpa_LE_MSZ), fill = T)
-
-  tacsatpa_LE_RECT <- trip_assign(tacsatp, eflalo, col = "LE_RECT", trust_logbook = T)
-  tacsatp <- rbindlist(list(tacsatp[tacsatp$FT_REF %!in% tacsatpa_LE_RECT$FT_REF,], tacsatpa_LE_RECT), fill = T)
-  
-  tacsatpa_LE_MET <- trip_assign(tacsatp, eflalo, col = "LE_MET", trust_logbook = T)
-  tacsatp <- rbindlist(list(tacsatp[tacsatp$FT_REF %!in% tacsatpa_LE_MET$FT_REF,], tacsatpa_LE_MET), fill = T)
-  
-  if("LE_WIDTH" %in% names(eflalo)){
-  tacsatpa_LE_WIDTH <- trip_assign(tacsatp, eflalo, col = "LE_WIDTH", trust_logbook = T)
-  tacsatp <- rbindlist(list(tacsatp[tacsatp$FT_REF %!in% tacsatpa_LE_WIDTH$FT_REF,], tacsatpa_LE_WIDTH), fill = T)
-  }
-  
-  #Set catch date to be equal to SI_DATE 
-  tacsatp$LE_CDAT <- tacsatp$SI_DATE
-  
   tacsatp <- data.frame(tacsatp)
   
   # Save not merged tacsat data
@@ -66,6 +41,28 @@ for(year in yearsToSubmit){
   
   # Subset 'tacsatp' where 'FT_REF' does not equal 0 (merged)
   tacsatp <- subset(tacsatp, FT_REF != 0)
+  
+  
+  #For multi gear/metier etc trips, divide the pings to the right gear/metier etc. 
+  tacsatpa_LE_GEAR <- trip_assign(tacsatp, eflalo, col = "LE_GEAR", trust_logbook = T)
+  tacsatp <- rbindlist(list(tacsatp[tacsatp$FT_REF %!in% tacsatpa_LE_GEAR$FT_REF,], tacsatpa_LE_GEAR), fill = T)
+  
+  tacsatpa_LE_MSZ <- trip_assign(tacsatp, eflalo, col = "LE_MSZ", trust_logbook = T)
+  tacsatp <- rbindlist(list(tacsatp[tacsatp$FT_REF %!in% tacsatpa_LE_MSZ$FT_REF,], tacsatpa_LE_MSZ), fill = T)
+  
+  tacsatpa_LE_RECT <- trip_assign(tacsatp, eflalo, col = "LE_RECT", trust_logbook = T)
+  tacsatp <- rbindlist(list(tacsatp[tacsatp$FT_REF %!in% tacsatpa_LE_RECT$FT_REF,], tacsatpa_LE_RECT), fill = T)
+  
+  tacsatpa_LE_MET <- trip_assign(tacsatp, eflalo, col = "LE_MET", trust_logbook = T)
+  tacsatp <- rbindlist(list(tacsatp[tacsatp$FT_REF %!in% tacsatpa_LE_MET$FT_REF,], tacsatpa_LE_MET), fill = T)
+  
+  if("LE_WIDTH" %in% names(eflalo)){
+    tacsatpa_LE_WIDTH <- trip_assign(tacsatp, eflalo, col = "LE_WIDTH", trust_logbook = T)
+    tacsatp <- rbindlist(list(tacsatp[tacsatp$FT_REF %!in% tacsatpa_LE_WIDTH$FT_REF,], tacsatpa_LE_WIDTH), fill = T)
+  }
+  
+  #Set catch date to be equal to SI_DATE 
+  tacsatp$LE_CDAT <- tacsatp$SI_DATE
   
   # Save 'tacsatp' to a file named "tacsatMerged<year>.RData" in the 'outPath' directory
   save(
@@ -100,27 +97,46 @@ for(year in yearsToSubmit){
   # Define speed thresholds associated with fishing for gears =====================
   
   # Create speed threshold object # 
+  t1 <- data.table(tacsatp)
+  
+  # table(t1$LE_MET)
   
   # start by making a list of fleet segments from lvl 5 metiers
-  tacsatp$LE_SEG <-  sapply(strsplit(tacsatp$LE_MET, "_"), function(x) paste(x[1:2], collapse = "_"))  
-
+  t1$LE_SEG <-  sapply(strsplit(t1$LE_MET, "_"), function(x) paste(x[1:2], collapse = "_"))  
   
   # Change wrongly assigned TBB_DEF (with small mesh size) to TBB_CRU
-  tacsatp[(tacsatp$LE_SEG %in% c("TBB_CRU", "TBB_DEF") & tacsatp$LE_MSZ < 40) |
-            (tacsatp$LE_SEG == "TBB_DEF" & is.na(tacsatp$LE_MSZ)), "LE_SEG"] <- "TBB_CRU"
+  t1[(t1$LE_SEG %in% c("TBB_CRU", "TBB_DEF") & t1$LE_MSZ < 40) |
+       (t1$LE_SEG == "TBB_DEF" & is.na(t1$LE_MSZ)), "LE_SEG"] <- "TBB_CRU"
   
   # Change wrongly assigned TBB_CRU (with large mesh size) to TBB_DEF
-  tacsatp[(tacsatp$LE_SEG %in% c("TBB_CRU", "TBB_DEF") & tacsatp$LE_MSZ >= 40) |
-            (tacsatp$LE_SEG == "TBB_CRU" & is.na(tacsatp$LE_MSZ)), "LE_SEG"] <- "TBB_DEF"
- 
+  t1[(t1$LE_SEG %in% c("TBB_CRU", "TBB_DEF") & t1$LE_MSZ >= 40) |
+       (t1$LE_SEG == "TBB_CRU" & is.na(t1$LE_MSZ)), "LE_SEG"] <- "TBB_DEF"
+  
   #Add special speed thresholds for some shrimp metiers
-  tacsatp[tacsatp$LE_MET == "OTB_CRU_40-59_0_0", "LE_SEG"] <- "OTB_CRU_40-59_0_0"
-  tacsatp[tacsatp$LE_MET == "OTB_CRU_32-69_0_0", "LE_SEG"] <- "OTB_CRU_32-69_0_0"
-  tacsatp[tacsatp$LE_MET == "OTB_CRU_16-31_0_0", "LE_SEG"] <- "OTB_CRU_16-31_0_0"
-  tacsatp[tacsatp$LE_MET == "OTB_DEF_32-69_0_0", "LE_SEG"] <- "OTB_DEF_32-69_0_0"
+  t1[t1$LE_MET == "OTB_CRU_40-59_0_0", "LE_SEG"] <- "OTB_CRU_40-59_0_0"
+  t1[t1$LE_MET == "OTB_CRU_32-69_0_0", "LE_SEG"] <- "OTB_CRU_32-69_0_0"
+  t1[t1$LE_MET == "OTB_CRU_16-31_0_0", "LE_SEG"] <- "OTB_CRU_16-31_0_0"
+  t1[t1$LE_MET == "OTB_DEF_32-69_0_0", "LE_SEG"] <- "OTB_DEF_32-69_0_0"
   
   #And also for one herring and blue whiting metier
-  tacsatp[tacsatp$LE_MET == "OTM_SPF_32-69_0_0", "LE_SEG"] <- "OTM_SPF_32-69_0_0"
+  t1[t1$LE_MET == "OTM_SPF_32-69_0_0", "LE_SEG"] <- "OTM_SPF_32-69_0_0"
+  
+  #Group some metiers into lvl4
+  # table(t1$LE_SEG)
+  t1[LE_SEG %like% "FPN", LE_SEG := "FPN"]
+  t1[LE_SEG %like% "FPO", LE_SEG := "FPO"]
+  t1[LE_SEG %like% "GNS", LE_SEG := "GNS"]
+  t1[LE_SEG %like% c("GNS|GNC|GND"), LE_SEG := "GNS"]
+  t1[LE_SEG %like% c("LHP|LLD|LLS|LH"), LE_SEG := "LL"]
+  t1[LE_SEG %like% c("MIS"), LE_SEG := "MIS"]
+  t1[LE_SEG %like% c("SDN"), LE_SEG := "SDN"]
+  t1[LE_SEG %like% c("SSC"), LE_SEG := "SSC"]
+  
+  # table(t1$LE_SEG)
+  
+  
+  tacsatp <- data.frame(t1)
+  
   
   saveRDS(tacsatp, paste0(outPath, "tacsatp_", year, ".rds"))
   

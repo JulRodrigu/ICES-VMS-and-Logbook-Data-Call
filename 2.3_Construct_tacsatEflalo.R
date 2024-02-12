@@ -26,19 +26,19 @@ speedarr <- data.frame(LE_SEG = sort(unique(tps$LE_SEG)),
 # Fill out the minimum and maximum speed thresholds
 fix(speedarr)
 
-speedarr <- structure(list(LE_SEG = c("DRB_MOL", "FPN_CAT", "FPN_CRU", "FPN_DEF",
-                                      "FPO_CRU", "FPO_DEF", "FPO_MOL", "GNC_DEF", "GND_SPF", "GNS_ANA",
-                                      "GNS_CRU", "GNS_DEF", "GNS_SPF", "LHP_DEF", "LHP_SPF", "LLD_ANA",
-                                      "LLS_DEF", "MIS_DEF", "OTB_CRU", "OTB_CRU_16-31_0_0", "OTB_CRU_32-69_0_0",
-                                      "OTB_DEF", "OTB_DEF_32-69_0_0", "OTB_DWS", "OTB_MCD", "OTB_SPF",
-                                      "OTM_DEF", "OTM_SPF", "OTM_SPF_32-69_0_0", "PS_SPF", "PTB_CRU",
-                                      "PTB_DEF", "PTB_SPF", "PTM_DEF", "PTM_SPF", "SDN_DEF", "SDN_SPF",
-                                      "SSC_DEF", "TBB_CRU", "TBB_DEF"),
-                           min = c(2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1.2, 1.5, 2, 1.5, 2, 2, 2,
-                                   2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 5),
-                           max = c(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0.1, 0.1, 0.1, 0.1, 4, 4, 2.5, 2.5, 4, 4, 4,
-                                   4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 7)),
-                      row.names = c(NA, 40L), class = "data.frame")
+# speedarr <- structure(list(LE_SEG = c("DRB_MOL", "FPN_CAT", "FPN_CRU", "FPN_DEF",
+#                                       "FPO_CRU", "FPO_DEF", "FPO_MOL", "GNC_DEF", "GND_SPF", "GNS_ANA",
+#                                       "GNS_CRU", "GNS_DEF", "GNS_SPF", "LHP_DEF", "LHP_SPF", "LLD_ANA",
+#                                       "LLS_DEF", "MIS_DEF", "OTB_CRU", "OTB_CRU_16-31_0_0", "OTB_CRU_32-69_0_0",
+#                                       "OTB_DEF", "OTB_DEF_32-69_0_0", "OTB_DWS", "OTB_MCD", "OTB_SPF",
+#                                       "OTM_DEF", "OTM_SPF", "OTM_SPF_32-69_0_0", "PS_SPF", "PTB_CRU",
+#                                       "PTB_DEF", "PTB_SPF", "PTM_DEF", "PTM_SPF", "SDN_DEF", "SDN_SPF",
+#                                       "SSC_DEF", "TBB_CRU", "TBB_DEF"),
+#                            min = c(2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1.2, 1.5, 2, 1.5, 2, 2, 2,
+#                                    2, 2, 2.5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 5),
+#                            max = c(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0.1, 0.1, 0.1, 0.1, 4, 4, 2.5, 2.5, 4, 4, 4,
+#                                    4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 7)),
+#                       row.names = c(NA, 40L), class = "data.frame")
 
 
 
@@ -57,6 +57,9 @@ for(year in yearsToSubmit){
   
   tacsatp <- readRDS(paste0(outPath, "tacsatp_", year, ".rds"))
   load(file = paste0(outPath,paste0("/cleanEflalo",year,".RData")) )
+  
+  if(!all(tacsatp$LE_SEG %in% speedarr$LE_SEG))
+    stop(paste("There is no speed filter for the segement(s):", MIS_SEG), collapse = ", ")
   
   #Add min and max 
   tacsatp <- tacsatp |> 
@@ -87,7 +90,7 @@ for(year in yearsToSubmit){
     eflalo$LE_EURO_TOT <- rowSums(eflalo[, idx_euro], na.rm = TRUE)
   
   # Remove the columns used for the total calculation
-  eflalo <- eflalo[, -c(idx_kg, idx_euro)]
+  # eflalo <- eflalo[, -c(idx_kg, idx_euro)]
   
   # Split eflalo into two data frames based on the presence of FT_REF in tacsatp
   eflaloNM <- subset(eflalo, !FT_REF %in% unique(tacsatp$FT_REF))

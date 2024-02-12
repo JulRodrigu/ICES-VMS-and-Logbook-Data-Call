@@ -87,7 +87,7 @@ table1Save <- table1 %>%
     sum_le_euro_tot = sum(LE_EURO_TOT, na.rm = TRUE),
     n_vessels = n_distinct(VE_ID, na.rm = TRUE),
     AverageGearWidth = mean(LE_GEARWIDTH, na.rm = T),
-    SA_M2 = sum(SA_M2, na.rm = T),
+    sum_sa_m2 = sum(SA_M2, na.rm = T),
     vessel_ids = ifelse(n_distinct(VE_ID) < 3, paste(unique(VE_ID), collapse = ";"), 'not_required')
   ) %>%
   # Relocate n_vessels and vessel_ids before Csquare

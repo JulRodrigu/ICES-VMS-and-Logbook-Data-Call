@@ -26,7 +26,7 @@ rm(list=ls())
 
 #Download pacman, and let that install the needed packages
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(vmstools, sf, data.table, raster, terra, mapview, Matrix, dplyr, doBy, mixtools, tidyr, glue, gt, progressr, geosphere, purrr)
+pacman::p_load(vmstools, sf, data.table, raster, terra, mapview, Matrix, dplyr, doBy, mixtools, tidyr, glue, gt, progressr, geosphere, purrr, ggplot2)
 
 
 #- Settings paths

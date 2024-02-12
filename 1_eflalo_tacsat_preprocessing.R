@@ -37,7 +37,6 @@ for(year in yearsToSubmit){
   eflalo <- formatEflalo(eflalo)
   
 # 2.2 Take only VMS pings in the ICES areas ==============================================
-  
   # Transform ICESareas and tacsat to sf objects
   ia <- transform_to_sf(ICESareas, coords = c("SI_LONG", "SI_LATI"))
   
@@ -71,36 +70,62 @@ for(year in yearsToSubmit){
   # eflalo$LE_RECT <- substr(eflalo$LE_RECT, 2, 5)
   
   
-  # Remove NA and get unique LE_RECT
-  unique_LE_RECT <- na.omit(unique(eflalo$LE_RECT))
+  # # Remove NA and get unique LE_RECT
+ 
+  #  pts <- unique(eflalo$LE_RECT) |> 
+  #   ICESrectangle2LonLat(midpoint = T) |> 
+  #   mutate(id = row_number(),
+  #          LE_RECT = unique_LE_RECT) |> 
+  #   na.omit() |> 
+  #   sf::st_as_sf(coords = c("SI_LONG","SI_LATI")) |> 
+  #   sf::st_set_crs(4326) 
+  # 
+  # 
+  # pols <- st_rasterize(pts, dx = grd_size_x, dy = grd_size_y,
+  #                      xlim = c(st_bbox(pts)[1] -grd_size_x/2, st_bbox(pts)[3] +grd_size_x/2),
+  #                      ylim = c(st_bbox(pts)[2] -grd_size_y/2, st_bbox(pts)[4] +grd_size_y/2) ) |> 
+  #   st_as_sf()
+  # 
+  # pts$geometry <- NULL
+  # pols <- merge(pols, pts)
+  # 
+  # LE_RECT_OUTSIDE_ICES <- pts$LE_RECT[pts$LE_RECT %!in% unique(st_intersection(pols, ia[, "geometry"])$LE_RECT)]
+  # 
+  # eflalox <- eflalo[eflalo$LE_RECT %!in% LE_RECT_ICES,]
+  # eflalo <- eflalo[eflalo$LE_RECT %!in% LE_RECT_OUTSIDE_ICES,]
   
-  # Get coordinates and filter out NA
-  coordsEflalo <- ICESrectangle2LonLat(unique_LE_RECT)
-  coordsEflalo$LE_RECT <- unique_LE_RECT
-  coordsEflalo <- coordsEflalo[complete.cases(coordsEflalo[, c("SI_LONG", "SI_LATI")]),]
   
-  # Generate corner points
-  cornerPoints <- lapply(1:nrow(coordsEflalo), function(i) {
-    cbind(
-      SI_LONG = coordsEflalo[i, "SI_LONG"] + c(0, 0.5, 1, 1, 0),
-      SI_LATI = coordsEflalo[i, "SI_LATI"] + c(0, 0.25, 0, 0.5, 0.5),
-      LE_RECT = coordsEflalo[i, "LE_RECT"]
-    )
-  })
-  
-  # Combine corner points and convert to numeric
-  coordsEflalo <- do.call(rbind, cornerPoints)
-  coordsEflalo <- transform(coordsEflalo, SI_LONG = as.numeric(SI_LONG), SI_LATI = as.numeric(SI_LATI))
-  
-  # Convert coordsEflalo to an sf object
-  coordsEflalo_sf <- st_as_sf(coordsEflalo, coords = c("SI_LONG", "SI_LATI"), crs = st_crs(ICESareas))
-  
-  # Get index of points within ICESareas
-  idxI <- unlist(st_intersects(coordsEflalo_sf, ICESareas))
-  
-  # Subset eflalo
-  eflalo <- subset(eflalo, LE_RECT %in% unique(coordsEflalo[idxI, "LE_RECT"]))
-  
+  # # Remove NA and get unique LE_RECT
+  # unique_LE_RECT <- na.omit(unique(eflalo$LE_RECT))
+  # 
+  # # Get coordinates and filter out NA
+  # coordsEflalo <- ICESrectangle2LonLat(unique_LE_RECT)
+  # coordsEflalo$LE_RECT <- unique_LE_RECT
+  # coordsEflalo <- coordsEflalo[complete.cases(coordsEflalo[, c("SI_LONG", "SI_LATI")]),]
+  # 
+  # # Generate corner points
+  # cornerPoints <- lapply(1:nrow(coordsEflalo), function(i) {
+  #   cbind(
+  #     SI_LONG = coordsEflalo[i, "SI_LONG"] + c(0, 0.5, 1, 1, 0),
+  #     SI_LATI = coordsEflalo[i, "SI_LATI"] + c(0, 0.25, 0, 0.5, 0.5),
+  #     LE_RECT = coordsEflalo[i, "LE_RECT"]
+  #   )
+  # })
+  # 
+  # # Combine corner points and convert to numeric
+  # coordsEflalo <- do.call(rbind, cornerPoints)
+  # coordsEflalo <- transform(coordsEflalo, SI_LONG = as.numeric(SI_LONG), SI_LATI = as.numeric(SI_LATI))
+  # 
+  # # Convert coordsEflalo to an sf object
+  # coordsEflalo_sf <- st_as_sf(coordsEflalo, coords = c("SI_LONG", "SI_LATI"), crs = st_crs(ICESareas))
+  # 
+  # # Get index of points within ICESareas
+  # idxI <- unlist(st_intersects(coordsEflalo_sf, ICESareas))
+  # 
+  # # Subset eflalo
+  # eflalox <- subset(eflalo, LE_RECT %!in% unique(coordsEflalo[idxI, "LE_RECT"]))
+  # eflalo <- subset(eflalo, LE_RECT %in% unique(coordsEflalo[idxI, "LE_RECT"]))
+  # 
 #   2.2 Clean the tacsat data  ============================================================================
   
   
