@@ -132,6 +132,9 @@ table2Save <- table2 %>%
 # colnames(table2Save) <- cols
 
 
+saveRDS(table1Save, paste0(outPath, "table1Save.rds"))
+saveRDS(table2Save, paste0(outPath, "table2Save.rds"))
+
 
 
 # 3.5   ICES DATSU VOCABULARY CHECKS BEFORE DATA SUBMISSION  ------------------------------------------
