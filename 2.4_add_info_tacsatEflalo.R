@@ -36,10 +36,11 @@
 # saveRDS(eusm, paste0(outPath, "eusm.rds"))
 
 ######## Download directly from dtu server - https://figshare.com/s/46ed591ca29f87c53311 
-######## and save the eusm.rds file to your outPath
+######## and save the eusm.rds and ICES_GEBCO.rds file to your outPath
 
 #Load the file into R
 eusm <- readRDS(paste0(outPath, "eusm.rds"))
+bathy <- readRDS(paste0(outPath, "ICES_GEBCO.rds"))
 
 #Save as shapefile
 # st_write(eusm, paste0(outPath, "eusm.shp"))
@@ -53,6 +54,7 @@ tacsatEflalo <- tacsatEflalo |>
   sf::st_as_sf(coords = c("SI_LONG", "SI_LATI"), remove = F) |> 
   sf::st_set_crs(4326) |> 
   st_join(eusm, join = st_intersects) |> 
+  st_join(bathy, join = st_intersects) |> 
   mutate(geometry = NULL) |> 
   data.frame()
 
