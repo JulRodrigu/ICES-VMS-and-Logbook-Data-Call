@@ -207,74 +207,30 @@ for(year in yearsToSubmit){
   
   
   # 1.3.2 Warn for outlying catch records --------------------------------------
+
+  # 
+  # Main script - remove change of outliers - should be checked in the logbook instead.
+  idxkg <- get_indices("", "KG", eflalo)
+  idxeur <- get_indices("", "EURO", eflalo)
+  idxoth <- setdiff(1:ncol(eflalo), c(idxkg, idxeur))
+  eflalo <- eflalo[, c(idxoth, idxkg, idxeur)]
+
+  specs <- get_species(eflalo)
+  specBounds <- get_bounds(specs, eflalo)
+  specBounds <- cbind(specs, specBounds)
+  specBounds[is.na(specBounds[, 2]), 2] <- "0"
+
+  idx <- unlist(lapply(specs, function(x) get_indices(x, "KG", eflalo)))
+
+  eflalo2 <- replace_outliers(eflalo, specBounds, idx)
   
-  # hey this is not yet happening!!!!!  
+  if(!identical(eflalo, eflalo2)){
+    warning(paste("There are unrealistic landings in the eflalo data, please check f4"))
+    f4 <- generics::setdiff(eflalo, eflalo2)
+    View(f4)
+  }
   
-  # 
-  # # Define a function to get the indices of columns that match a pattern
-  # get_indices <- function(pattern, col_type, data) {
-  #   grep(paste0("LE_", col_type, "_", pattern), colnames(data))
-  # }
-  # 
-  # # Define a function to get the species names
-  # get_species <- function(data) {
-  #   substr(grep("KG", colnames(data), value = TRUE), 7, 9)
-  # }
-  # 
-  # # Define a function to get the bounds for each species
-  # get_bounds <- function(specs, data) {
-  #   sapply(specs, function(x) {
-  #     idx <- get_indices(x, "KG", data)  # specify "KG" as the col_type
-  #     if (length(idx) > 0) {
-  #       wgh <- sort(unique(unlist(data[data[, idx] > 0, idx])))
-  #       # Exclude 0 values before applying log10
-  #       wgh <- wgh[wgh > 0]
-  #       if (length(wgh) > 0) {
-  #         log_wgh <- log10(wgh)
-  #         difw <- diff(log_wgh)
-  #         if (any(difw > lanThres)) {
-  #           # Return the next value in wgh after the last value that had a difference less than or equal to lanThres
-  #           wgh[max(which(difw <= lanThres)) + 1]
-  #         } else {
-  #           # If no outliers, return the maximum value in wgh
-  #           max(wgh, na.rm = TRUE)
-  #         }
-  #       } else {
-  #         0
-  #       }
-  #     } else {
-  #       0
-  #     }
-  #   })
-  # }
-  # 
-  # 
-  # # Define a function to replace outliers with NA
-  # replace_outliers <- function(data, specBounds, idx) {
-  #   for (iSpec in idx) {
-  #     outlier_idx <- which(data[, iSpec] > as.numeric(specBounds[(iSpec - idx[1] + 1), 2]))
-  #     if (length(outlier_idx) > 0) {
-  #       data[outlier_idx, iSpec] <- NA
-  #     }
-  #   }
-  #   data
-  # }
-  # 
-  # # Main script - remove change of outliers - should be checked in the logbook instead. 
-  # # idxkg <- get_indices("", "KG", eflalo)
-  # # idxeur <- get_indices("", "EURO", eflalo)
-  # # idxoth <- setdiff(1:ncol(eflalo), c(idxkg, idxeur))
-  # # eflalo <- eflalo[, c(idxoth, idxkg, idxeur)]
-  # # 
-  # # specs <- get_species(eflalo)
-  # # specBounds <- get_bounds(specs, eflalo)
-  # # specBounds <- cbind(specs, specBounds)
-  # # specBounds[is.na(specBounds[, 2]), 2] <- "0"
-  # # 
-  # # idx <- unlist(lapply(specs, function(x) get_indices(x, "KG", eflalo)))
-  # # 
-  # # eflalo <- replace_outliers(eflalo, specBounds, idx)
-  # 
+    # 
   # 
   # 1.3.3 Remove non-unique trip numbers --------------------------------------
   

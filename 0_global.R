@@ -39,10 +39,11 @@ rm(list=ls())
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(vmstools, sf, data.table, raster, terra, mapview, Matrix, dplyr, 
                doBy, mixtools, tidyr, glue, gt, progressr, geosphere, purrr, 
-               ggplot2, sfdSAR, icesVocab)
+               ggplot2, sfdSAR, icesVocab, generics)
 
 #- Settings paths
-path <- "yourBasePath/" # Your path / working directory
+path <- paste0("yourBasePath", "/") # Your path / working directory
+path <- paste0("//ait-pdfs.win.dtu.dk/Qdrev/AQUA/dfad/users/jepol/home/24-01-17_WGSFD_Datacall_2024/Run_24-03-12", "/") # Your path / working directory
 
 codePath  <- paste0(path, "Scripts/")   #Location where you store R scripts
 dataPath  <- paste0(path, "Data/")      #Location where you store tacsat (VMS) and eflalo (logbook) data
@@ -588,6 +589,57 @@ get_bounds <- function(specs, data) {
     }
   })
 }
+
+# Define a function to replace outliers with NA
+replace_outliers <- function(data, specBounds, idx) {
+  for (iSpec in idx) {
+    outlier_idx <- which(data[, iSpec] > as.numeric(specBounds[(iSpec - idx[1] + 1), 2]))
+    if (length(outlier_idx) > 0) {
+      data[outlier_idx, iSpec] <- NA
+    }
+  }
+  data
+}
+
+
+
+# Define a function to get the indices of columns that match a pattern
+get_indices <- function(pattern, col_type, data) {
+  grep(paste0("LE_", col_type, "_", pattern), colnames(data))
+}
+
+# Define a function to get the species names
+get_species <- function(data) {
+  substr(grep("KG", colnames(data), value = TRUE), 7, 9)
+}
+
+# Define a function to get the bounds for each species
+get_bounds <- function(specs, data) {
+  sapply(specs, function(x) {
+    idx <- get_indices(x, "KG", data)  # specify "KG" as the col_type
+    if (length(idx) > 0) {
+      wgh <- sort(unique(unlist(data[data[, idx] > 0, idx])))
+      # Exclude 0 values before applying log10
+      wgh <- wgh[wgh > 0]
+      if (length(wgh) > 0) {
+        log_wgh <- log10(wgh)
+        difw <- diff(log_wgh)
+        if (any(difw > lanThres)) {
+          # Return the next value in wgh after the last value that had a difference less than or equal to lanThres
+          wgh[max(which(difw <= lanThres)) + 1]
+        } else {
+          # If no outliers, return the maximum value in wgh
+          max(wgh, na.rm = TRUE)
+        }
+      } else {
+        0
+      }
+    } else {
+      0
+    }
+  })
+}
+
 
 # Define a function to replace outliers with NA
 replace_outliers <- function(data, specBounds, idx) {
