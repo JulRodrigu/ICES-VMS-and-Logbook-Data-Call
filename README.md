@@ -36,8 +36,8 @@ In Rstudio go to files -> New Project... -> Version Control -> Git (if you dont 
 - Run for all years to merge tacsat and eflalo. The merged tacsatEflalo contain all fishing pings with eflalo information. 
 
 2.4_add_info_tacsatEflalo.R
-- Download EUSeaMap_2023, either from emodnet and do some calculations or directly from dtu: https://figshare.com/s/46ed591ca29f87c53311 
-- Add habitat and swepat area to each fishing ping. 
+- Download EUSeaMap_2023 and depth interval polygons, either from emodnet and do some calculations or directly from dtu: https://figshare.com/s/46ed591ca29f87c53311 
+- Add habitat, depth interval and swept area to each fishing ping. 
 
 3.1_Collect_tables.R
 - Add all years together and only select the necessary columns

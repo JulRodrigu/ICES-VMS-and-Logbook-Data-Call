@@ -20,18 +20,6 @@ setorder(his, LE_SEG, SI_SP)
 
 his[LE_SEG == i & SI_SP < 8]
 
-i <- "PTB_CRU"
-i <- "OTB_MCD" 
-i <- "PTM_SPF"
-for(i in unique(tps$LE_SEG)){
-  cat(i)
-  #By segment
-  his <- tps[,.(N = sum(N)), by = .(SI_SP = round(SI_SP/0.2)*0.2, LE_SEG)]
-  his <- tps[year %in% 2020:2023,.(N = sum(N)), by = .(LE_SEG, SI_SP)]
-  setorder(his, LE_SEG, SI_SP)
-  
-  his[LE_SEG == i & SI_SP < 8]
-  
   i <- "PTB_CRU"
   i <- "OTB_MCD" 
   i <- "PTM_SPF"
