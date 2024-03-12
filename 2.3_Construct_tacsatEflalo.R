@@ -18,8 +18,6 @@ his <- tps[,.(N = sum(N)), by = .(SI_SP = round(SI_SP/0.2)*0.2, LE_SEG)]
 his <- tps[year %in% 2020:2023,.(N = sum(N)), by = .(LE_SEG, SI_SP)]
 setorder(his, LE_SEG, SI_SP)
 
-his[LE_SEG == i & SI_SP < 8]
-
   i <- "PTB_CRU"
   i <- "OTB_MCD" 
   i <- "PTM_SPF"
@@ -110,14 +108,11 @@ saveRDS(speedarr, paste0(outPath, "speedarr.rds"))
 # Get unique metier level 6 codes in files
 LE_MET <- unique(tps$LE_MET)
 
-# Get correct metier codes from ICES
-m6_ices         <-  getCodeList("Metier6_FishingActivity")
-
 # Check (TRUE are correct codes, FALSE incorrect)
-table(LE_MET %in% m6_ices$Key)
+table(LE_MET %in% valid_metiers)
 
 # Which ones not correct? filter these out or replace these!
-LE_MET[LE_MET %!in% m6_ices$Key]
+LE_MET[LE_MET %!in% valid_metiers]
 
 
 # loop over years
