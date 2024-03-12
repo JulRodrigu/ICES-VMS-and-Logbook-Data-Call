@@ -1,9 +1,19 @@
+#'------------------------------------------------------------------------------
+#
+# Script to extract and process VMS and logbook data for ICES VMS data call
+# 2.2: Automatic speed thresholds                                           ----
+# 
+# This script is only necessary when you do NOT want to use fixed speeds
+# for the determination of activity of vessels
+#
+#'------------------------------------------------------------------------------
+
 #- Set the gear names for which automatic fishing activity is wanted
 #  It is important to fill out the gears you want to apply auto detection for
 autoDetectionGears        <- c("TBB","OTB","OTT","SSC","SDN","DRB","PTB","HMD", "MIS")
 
 # Analyse activity automated for common gears only. Use the speedarr for the other gears =============== 
-year <- 2021
+year <- 2023
 for(year in yearsToSubmit){
   
   print(year)
@@ -15,16 +25,14 @@ load(file = paste0(outPath,paste0("/cleanEflalo",year,".RData")) )
 subTacsat <- subset(tacsatp, LE_GEAR %in% autoDetectionGears)
 nonsubTacsat <- subset(tacsatp, !LE_GEAR %in% autoDetectionGears)
 
-if (visualInspection == TRUE)
-{
+if (visualInspection == TRUE)  {
   storeScheme <-
     activityTacsatAnalyse(
       subTacsat,
       units = "year",
       analyse.by = "LE_SEG",
       identify = "means")
-} else
-{
+} else{
   storeScheme <-
     expand.grid(
       years = year,
@@ -125,8 +133,12 @@ nonsubTacsat$SI_STATE[
 nonsubTacsat$SI_STATE[ is.na(nonsubTacsat$SI_STATE) ] <- "s"
 
 
-??? Save somthing
+# ??? Save somthing
 
 # Combine the two dataset together again =============== 
 
 }
+
+#'------------------------------------------------------------------------------
+# End of script                                                             
+#'------------------------------------------------------------------------------

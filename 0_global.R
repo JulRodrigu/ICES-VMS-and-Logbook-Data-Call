@@ -1,8 +1,9 @@
-#-------------------------------------------------------------------------------
+#'------------------------------------------------------------------------------
 #
 # Script to extract and process VMS and logbook data for ICES VMS data call
+# 0: Loading data, setting options and defining functions                   ----
 #
-# By: Niels Hintzen, Katell Hamon, Marcel Machiels#
+# By: Niels Hintzen, Katell Hamon, Marcel Machiels
 # Code by: Niels Hintzen
 # Contact: niels.hintzen@wur.nl
 #
@@ -11,32 +12,42 @@
 # Update Date: 04-Feb-2020 ; Updated by: Colin Millar
 # Update Date: 07-Feb 2020 ; Updated by: Neil Campbell
 # Update Date: 08-Feb 2024 ; Updated by: Jeppe Olsen
+# Update Date: 03-Mar 2024 ; Updated by: Tamara Vallina 
 # Client: ICES
-#-------------------------------------------------------------------------------
+#
+#'------------------------------------------------------------------------------
 
-#--------------------READ ME----------------------------------------------------
+#'------------------------------------------------------------------------------
+# READ ME                                                                   
 # The following script is a proposed workflow example to processes the ICES
-# VMS datacall request. It is not an exact template to be applied to data from
+# VMS data call request. It is not an exact template to be applied to data from
 # every member state and needs to be adjusted according to the data availability
 # and needs of every member state.
-#-------------------------------------------------------------------------------
+#'------------------------------------------------------------------------------
 
+#'------------------------------------------------------------------------------
+# 0.1 Preparations                                                          ----
+#'------------------------------------------------------------------------------
 
 rm(list=ls())
 
-#Download pacman, and let that install the needed packages
-if (!require("pacman")) install.packages("pacman")
-pacman::p_load(vmstools, sf, data.table, raster, terra, mapview, Matrix, dplyr, doBy, mixtools, tidyr, glue, gt, progressr, geosphere, purrr, ggplot2)
+# Install packages from repository if necessary
+# install.packages("sfdSAR", repos = "https://ices-tools-prod.r-universe.dev")
+# install.packages("icesVocab", repos = "https://ices-tools-prod.r-universe.dev")
 
+# Download pacman, and let that install the needed packages
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(vmstools, sf, data.table, raster, terra, mapview, Matrix, dplyr, 
+               doBy, mixtools, tidyr, glue, gt, progressr, geosphere, purrr, 
+               ggplot2, sfdSAR, icesVocab)
 
 #- Settings paths
+path <- "yourBasePath/" # Your path / working directory
 
-path <- "//ait-pdfs.win.dtu.dk/Qdrev/AQUA/dfad/users/jepol/home/24-01-17_WGSFD_Datacall_2024/"
-
-codePath  <- paste0(path, "Scripts/")          #Location where you store R scripts
-dataPath  <- paste0(path, "data/eflalo/")      #Location where you store tacsat (VMS) and eflalo (logbook) data
-outPath   <- paste0(path, "Results/")    #Location where you want to store the results
-plotPath <- paste0(path, "Plots/") 
+codePath  <- paste0(path, "Scripts/")   #Location where you store R scripts
+dataPath  <- paste0(path, "Data/")      #Location where you store tacsat (VMS) and eflalo (logbook) data
+outPath   <- paste0(path, "Results/")   #Location where you want to store the results
+plotPath  <- paste0(path, "Plots/") 
 
 dir.create(codePath, showWarnings = T)
 dir.create(dataPath, showWarnings = T)
@@ -45,7 +56,11 @@ dir.create(plotPath, showWarnings = T)
 
 
 
-#- Setting specific thresholds
+#'------------------------------------------------------------------------------
+# 0.2 Settings for analysis                                                 ----
+#'------------------------------------------------------------------------------
+
+# Setting thresholds
 spThres       <- 20   #Maximum speed threshold in analyses in nm
 intThres      <- 5    #Minimum difference in time interval in minutes to prevent pseudo duplicates
 intvThres     <- 240  #Maximum difference in time interval in minutes to prevent intervals being too large to be realistic
@@ -54,10 +69,8 @@ lanThres      <- 1.5  #Maximum difference in log10-transformed sorted weights
 #- Re-run all years as we have new field for no. vessels
 yearsToSubmit <- 2009:2023
 
-sf::sf_use_s2(FALSE)
-'%!in%' <- function(x,y)!('%in%'(x,y))
 
-#- Decide if you want to visualy analyse speed-histograms to identify fishing activity
+#- Decide if you want to visually analyse speed-histograms to identify fishing activity
 #  peaks or have prior knowledge and use the template provided around lines 380 below
 visualInspection          <- FALSE
 
@@ -69,10 +82,17 @@ visualInspection          <- FALSE
 linkEflaloTacsat          <-  c("day","trip")
 # linkEflaloTacsat          <- c("trip")
 
-
-
+# Extract valid level 6 metiers 
 valid_metiers <- fread("https://raw.githubusercontent.com/ices-eg/RCGs/master/Metiers/Reference_lists/RDB_ISSG_Metier_list.csv")$Metier_level6
 
+# Necessary setting for spatial operations
+sf::sf_use_s2(FALSE)
+
+#'------------------------------------------------------------------------------
+# 0.3 Defining functions                                                    ----
+#'------------------------------------------------------------------------------
+# Define function for NOT in data 
+'%!in%' <- function(x,y)!('%in%'(x,y))
 
 # Define a function to transform spatial data
 transform_to_sf <- function(data, coords, crs = 4326) {
@@ -80,8 +100,6 @@ transform_to_sf <- function(data, coords, crs = 4326) {
     sf::st_as_sf(coords = coords, remove = F) %>%
     sf::st_set_crs(crs)
 }
-
-
 
 # Define a function to calculate species bounds
 get_spec_bounds <- function(specs, eflalo, lanThres) {
@@ -105,10 +123,6 @@ get_spec_bounds <- function(specs, eflalo, lanThres) {
   )
 }
 
-
-
-
-
 # Define a function to get the index (column number) of each of the species
 get_species_indices <- function(specs, eflalo) {
   sapply(specs, function(spec) {
@@ -117,26 +131,20 @@ get_species_indices <- function(specs, eflalo) {
   })
 }
 
-
-
 # Define a function to get the indices of KG and EURO columns
 kgeur <- function(cols) {
   grep("KG|EURO", cols)
 }
-
-
 
 # Define a function to create a unique trip identifier
 create_trip_id <- function(eflalo) {
   paste(eflalo$LE_ID, eflalo$LE_CDAT, sep="-")
 }
 
-
 # Define a function to convert date and time columns to POSIXct
 convert_to_datetime <- function(date_col, time_col) {
   as.POSIXct(paste(date_col, time_col, sep = " "), tz = "GMT", format = "%d/%m/%Y  %H:%M")
 }
-
 
 # Define a function to remove records starting before the 1st of January
 remove_before_jan <- function(eflalo, year) {
@@ -152,10 +160,7 @@ remove_before_jan <- function(eflalo, year) {
   return(eflalo)
 }
 
-
-
 # Define a function to merge EFLALO and TACSAT objects
-
 mergeEfTac <- function (eflalo2, tacsat) {
   if (!"D_DATIM" %in% colnames(eflalo2)) 
     eflalo2$D_DATIM <- as.POSIXct(paste(eflalo2$FT_DDAT, 
@@ -170,14 +175,13 @@ mergeEfTac <- function (eflalo2, tacsat) {
     eflalo2$VE_REF <- ac(eflalo2$VE_REF)
   if (class(tacsat$VE_REF) != "character") 
     
-  # Convert 'VE_REF' columns to character if they are not already
-  if (class(eflalo2$VE_REF) != "character") {
-    eflalo2$VE_REF <- as.character(eflalo2$VE_REF)
-  }
+    # Convert 'VE_REF' columns to character if they are not already
+    if (class(eflalo2$VE_REF) != "character") {
+      eflalo2$VE_REF <- as.character(eflalo2$VE_REF)
+    }
   if (class(tacsat$VE_REF) != "character") {
     tacsat$VE_REF <- as.character(tacsat$VE_REF)
   }
-  
   
   
   # Order 'eflalo2' and 'tacsat' by 'VE_REF' and date columns
@@ -221,10 +225,7 @@ mergeEfTac <- function (eflalo2, tacsat) {
   return(tacsat)
 }
 
-
-
-## Define a function to calculate intervals in the TACSAT data
-
+# Define a function to calculate intervals in the TACSAT data
 intvTacsat <- function (tacsat, level = "trip", weight = c(1, 0), fill.na = FALSE) {
   # Check if 'weight' is a length 2 numeric vector
   if (length(weight) != 2) 
@@ -341,8 +342,7 @@ intvTacsat <- function (tacsat, level = "trip", weight = c(1, 0), fill.na = FALS
   return(tacsat)
 }
 
-
-
+# Define a function to  sort Tacsat data 
 sfsortTacsat <- function(dat) {
   if (!"SI_DATIM" %in% colnames(dat)) {
     dat$SI_DATIM <- as.POSIXct(paste(dat$SI_DATE, dat$SI_TIME, sep = " "), tz = "GMT", format = "%d/%m/%Y  %H:%M")
@@ -356,12 +356,13 @@ sfsortTacsat <- function(dat) {
   return(dat)
 }
 
+# Define a function to assign tripnumber to Tacsat data
 trip_assign <- function(tacsatp, eflalo, col = "LE_GEAR", trust_logbook = T){
   
   if(col == "LE_MET"){
-  tst <- data.table(eflalo)[get(col) %in% valid_metiers & !is.na(get(col)) ,.(uniqueN(get(col))), by=.(FT_REF)]
+    tst <- data.table(eflalo)[get(col) %in% valid_metiers & !is.na(get(col)) ,.(uniqueN(get(col))), by=.(FT_REF)]
   }else{
-   tst <- data.table(eflalo)[!is.na(get(col)),.(uniqueN(get(col))), by=.(FT_REF)]
+    tst <- data.table(eflalo)[!is.na(get(col)),.(uniqueN(get(col))), by=.(FT_REF)]
   }
   if(nrow(tst[V1>1])==0){
     warning(paste("No duplicate", col, "in tacsatp"))
@@ -436,8 +437,7 @@ trip_assign <- function(tacsatp, eflalo, col = "LE_GEAR", trust_logbook = T){
   return(tz)
 }
 
-
-
+# Define a function to add gear width to metier
 add_gearwidth <- function(x, met_name = "LE_MET", oal_name = "VE_LEN", kw_name = "VE_KW"){
   
   require(data.table)
@@ -495,6 +495,7 @@ add_gearwidth <- function(x, met_name = "LE_MET", oal_name = "VE_LEN", kw_name =
   return(gearWidth_filled)
 }
 
+# Define a function to check for missing columns in clean Tacsat data
 tacsat_clean <- function(tacsat){
   '%!in%' <- function(x,y)!('%in%'(x,y))
   cols <- c("SI_LATI", "SI_LONG", "SI_SP", "SI_HE")
@@ -505,10 +506,7 @@ tacsat_clean <- function(tacsat){
   
 }
 
-
-
-
-
+# Define a function to check for missing columns in clean Eflalo data
 eflalo_clean <- function(eflalo){
   '%!in%' <- function(x,y)!('%in%'(x,y))
   cols <- c("VE_KW", "VE_LEN", "VE_TON", "LE_MSZ", grep("KG|EURO", colnames(eflalo), value = T))
@@ -554,5 +552,54 @@ eflalo_clean <- function(eflalo){
   
 }
 
+# Define a function to get the indices of columns that match a pattern
+get_indices <- function(pattern, col_type, data) {
+  grep(paste0("LE_", col_type, "_", pattern), colnames(data))
+}
 
+# Define a function to get the species names
+get_species <- function(data) {
+  substr(grep("KG", colnames(data), value = TRUE), 7, 9)
+}
 
+# Define a function to get the bounds for each species
+get_bounds <- function(specs, data) {
+  sapply(specs, function(x) {
+    idx <- get_indices(x, "KG", data)  # specify "KG" as the col_type
+    if (length(idx) > 0) {
+      wgh <- sort(unique(unlist(data[data[, idx] > 0, idx])))
+      # Exclude 0 values before applying log10
+      wgh <- wgh[wgh > 0]
+      if (length(wgh) > 0) {
+        log_wgh <- log10(wgh)
+        difw <- diff(log_wgh)
+        if (any(difw > lanThres)) {
+          # Return the next value in wgh after the last value that had a difference less than or equal to lanThres
+          wgh[max(which(difw <= lanThres)) + 1]
+        } else {
+          # If no outliers, return the maximum value in wgh
+          max(wgh, na.rm = TRUE)
+        }
+      } else {
+        0
+      }
+    } else {
+      0
+    }
+  })
+}
+
+# Define a function to replace outliers with NA
+replace_outliers <- function(data, specBounds, idx) {
+  for (iSpec in idx) {
+    outlier_idx <- which(data[, iSpec] > as.numeric(specBounds[(iSpec - idx[1] + 1), 2]))
+    if (length(outlier_idx) > 0) {
+      data[outlier_idx, iSpec] <- NA
+    }
+  }
+  data
+}
+
+#'------------------------------------------------------------------------------
+# End of script                                                             
+#'------------------------------------------------------------------------------

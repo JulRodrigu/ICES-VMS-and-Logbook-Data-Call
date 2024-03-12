@@ -1,12 +1,22 @@
+#'------------------------------------------------------------------------------
+#
+# Script to extract and process VMS and logbook data for ICES VMS data call
+# 2.4: Add information to TacsatEflalo                                      ----
+# You can work with clean TacsatEflalo files that we have constructed 
+# in previous scripts, or direct to your own merged and clean files.
+#
+#'------------------------------------------------------------------------------
 
-
-### The first section is optional, since this has already been done by jepol, and the resulting 
-### rds file can be downloaded directly from the dtu server. 
+#'------------------------------------------------------------------------------
+# 2.4.1 Create / download EUSeaMap habitat layer                            ----
+#'------------------------------------------------------------------------------
+# The first section is optional, since this has already been done by jepol, and the resulting 
+# rds file can be downloaded directly from the dtu server. 
 
 # # Be sure that the download does not timeout before it is finished
 # options(timeout = max(5000, getOption("timeout")))
 # 
-# #Download zip file to folder
+# # Download zip file to folder
 # url <- "https://files.emodnet-seabedhabitats.eu/data/EUSeaMap_2023.zip"
 # zipF <- paste0(outPath, "eusm.zip")
 # download.file(url, zipF)
@@ -42,22 +52,26 @@
 eusm <- readRDS(paste0(outPath, "eusm.rds"))
 bathy <- readRDS(paste0(outPath, "ICES_GEBCO.rds"))
 
-#Save as shapefile
-# st_write(eusm, paste0(outPath, "eusm.shp"))
-year <- 2021
-for(year in yearsToSubmit){
-  print(year)
-  load(file = paste0(outPath,paste0("/tacsatEflalo",year,".RData")) )
-  sf_use_s2(F) #If not you probably get an error
-### Add habitat to the tacsateflalo file
-tacsatEflalo <- tacsatEflalo |> 
-  sf::st_as_sf(coords = c("SI_LONG", "SI_LATI"), remove = F) |> 
-  sf::st_set_crs(4326) |> 
-  st_join(eusm, join = st_intersects) |> 
-  st_join(bathy, join = st_intersects) |> 
-  mutate(geometry = NULL) |> 
-  data.frame()
 
+#'------------------------------------------------------------------------------
+# 2.4.2 Add information to tacsatEflalo                                     ----
+#'------------------------------------------------------------------------------
+# If you already have cleaned tacsatEflalo files elsewhere, 
+# change file location below, and make sure data is called tacsatEflalo
+# Loop trough years to submit
+for(year in yearsToSubmit){
+  print(paste0("Start loop for year ",year))
+  load(file = paste0(outPath,"tacsatEflalo",year,".RData"))
+  
+# Add habitat to the tacsatEflalo file
+  tacsatEflalo <- tacsatEflalo |> 
+    sf::st_as_sf(coords = c("SI_LONG", "SI_LATI"), remove = F) |> 
+    sf::st_set_crs(4326) |> 
+    st_join(eusm, join = st_intersects) |> 
+    st_join(bathy, join = st_intersects) |> 
+    mutate(geometry = NULL) |> 
+    data.frame()
+  
 
 # Calculate the c-square based on longitude and latitude
 tacsatEflalo$Csquare <- CSquare(tacsatEflalo$SI_LONG, tacsatEflalo$SI_LATI, degrees = 0.05)
@@ -68,16 +82,22 @@ tacsatEflalo$Month <- month(tacsatEflalo$SI_DATIM)
 
 # Calculate the kilowatt-hour and convert interval to hours
 tacsatEflalo$kwHour <- tacsatEflalo$VE_KW * tacsatEflalo$INTV / 60
+tacsatEflalo$INTV_h <- tacsatEflalo$INTV / 60
 
-tacsatEflalo$INTV <- tacsatEflalo$INTV / 60
+# Add the calculated gear width to each fishing point
+tacsatEflalo$GEARWIDTH <- add_gearwidth(tacsatEflalo, met_name = "LE_MET", oal_name = "VE_LEN", kw_name = "VE_KW")
 
-#Add the calculated gearwidth to each fishingpoint
-tacsatEflalo$SI_GEARWIDTH <- add_gearwidth(tacsatEflalo, met_name = "LE_MET", oal_name = "VE_LEN", kw_name = "VE_KW")
+# Add swept area(m2) for each point in the tacsateflalo
+tacsatEflalo$SA_M2 <- tacsatEflalo$SI_GEARWIDTH * tacsatEflalo$INTV_h * tacsatEflalo$SI_SP * 1852
 
-#Add swept area(m2) for each point in the tacsateflalo
-tacsatEflalo$SA_M2 <- tacsatEflalo$SI_GEARWIDTH * tacsatEflalo$INTV * tacsatEflalo$SI_SP *1852
-
-# tacsatEflalo[,.(min = min(SI_GEARWIDTH), max = max(SI_GEARWIDTH)), by = .(LE_MET)]
+# Check if logical
+tacsatEflalo[,.(min = min(GEARWIDTH), max = max(GEARWIDTH)), by = .(LE_MET)]
 
 saveRDS(data.frame(tacsatEflalo), paste0(outPath, "tacsatEflalo_", year, ".rds"))
 }
+
+rm(tacsatEflalo)
+#'------------------------------------------------------------------------------
+# End of script                                                             
+#'------------------------------------------------------------------------------
+
