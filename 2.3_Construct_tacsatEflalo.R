@@ -12,23 +12,14 @@
 
 # Load summary for all fleet segments and plot them by segment
 tps <- rbindlist(lapply(paste0(outPath, "tp_", yearsToSubmit, ".rds"), readRDS))  
- 
-#By segment
-his <- tps[,.(N = sum(N)), by = .(SI_SP = round(SI_SP/0.2)*0.2, LE_SEG)]
-his <- tps[year %in% 2020:2023,.(N = sum(N)), by = .(LE_SEG, SI_SP)]
-setorder(his, LE_SEG, SI_SP)
 
   i <- "PTB_CRU"
   i <- "OTB_MCD" 
   i <- "PTM_SPF"
   for(i in unique(tps$LE_SEG)){
     cat(i)
-    # ggplot(his[LE_SEG == i & SI_SP < 8], aes(x = SI_SP, y = N)) + 
-    #   geom_line(aes(color=LE_SEG))+
-    #     scale_x_continuous(breaks = seq(0, 8, by = 1))
-    # ggplot(tps[LE_SEG == i & SI_SP < 8],aes(x=SI_SP,y=N))+
-    #   geom_bar(stat='identity')+
-    #   ggtitle(paste(i)) 
+    cat(" ")
+
     ggplot(tps[LE_SEG == i & SI_SP < 8],aes(x=SI_SP,y=N))+
       geom_col()+
       ggtitle(paste(i)) 
@@ -50,30 +41,14 @@ setorder(his, LE_SEG, SI_SP)
   # Fill out the minimum and maximum speed thresholds
   fix(speedarr)
   
-  # speedarr <- structure(list(LE_SEG = c("DRB_MOL", "FPN_CAT", "FPN_CRU", "FPN_DEF",
-  #                                       "FPO_CRU", "FPO_DEF", "FPO_MOL", "GNC_DEF", "GND_SPF", "GNS_ANA",
-  #                                       "GNS_CRU", "GNS_DEF", "GNS_SPF", "LHP_DEF", "LHP_SPF", "LLD_ANA",
-  #                                       "LLS_DEF", "MIS_DEF", "OTB_CRU", "OTB_CRU_16-31_0_0", "OTB_CRU_32-69_0_0",
-  #                                       "OTB_DEF", "OTB_DEF_32-69_0_0", "OTB_DWS", "OTB_MCD", "OTB_SPF",
-  #                                       "OTM_DEF", "OTM_SPF", "OTM_SPF_32-69_0_0", "PS_SPF", "PTB_CRU",
-  #                                       "PTB_DEF", "PTB_SPF", "PTM_DEF", "PTM_SPF", "SDN_DEF", "SDN_SPF",
-  #                                       "SSC_DEF", "TBB_CRU", "TBB_DEF"),
-  #                            min = c(2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 1.2, 1.5, 2, 1.5, 2, 2, 2,
-  #                                    2, 2, 2.5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 5),
-  #                            max = c(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0.1, 0.1, 0.1, 0.1, 4, 4, 2.5, 2.5, 4, 4, 4,
-  #                                    4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 7)),
-  #                       row.names = c(NA, 40L), class = "data.frame")
-  
-  
-  
-  # saveRDS(speedarr, paste0(outPath, "speedarr.rds"))
+  saveRDS(speedarr, paste0(outPath, "speedarr.rds"))
   
   
   # Analyse activity automated fo# saveRDS(speedarr, paste0(outPath, "speedarr.rds"))
 
 # 
 # #Load speedaar that was created earlier
-speedarr <- readRDS(paste0(outPath, "speedarr.rds"))
+# speedarr <- readRDS(paste0(outPath, "speedarr.rds"))
 
 # Analyse activity automated fo
 
