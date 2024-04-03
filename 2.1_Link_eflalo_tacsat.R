@@ -92,7 +92,7 @@ for(year in yearsToSubmit){
   tacsatp <- intvTacsat(tacsatp, level = "trip", fill.na = TRUE)
   
   # Reset values that are simply too high to 2x the regular interval rate  
-  tacsatp$INTV[tacsatp$INTV > intvThres] <- 2 * intvThres
+  tacsatp$INTV[tacsatp$INTV > intvThres | is.na(tacsatp$INTV)] <- 2 * intvThres
   
   
   # Remove points with NA's in them in critical places
@@ -113,6 +113,8 @@ for(year in yearsToSubmit){
   # Create speed threshold object # 
   t1 <- data.table(tacsatp)
   
+  #Remove duplicates
+  t1 <- unique(t1)
   # Optional: Control step for metiers
   # table(t1$LE_MET)
   
@@ -150,7 +152,6 @@ for(year in yearsToSubmit){
   
   # Optional: Control if segments are logical
   # table(t1$LE_SEG)
-  
   
   tacsatp <- data.frame(t1)
   

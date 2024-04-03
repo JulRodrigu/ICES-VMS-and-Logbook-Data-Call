@@ -41,14 +41,14 @@ tps <- rbindlist(lapply(paste0(outPath, "tp_", yearsToSubmit, ".rds"), readRDS))
   # Fill out the minimum and maximum speed thresholds
   fix(speedarr)
   
-  saveRDS(speedarr, paste0(outPath, "speedarr.rds"))
+  # saveRDS(speedarr, paste0(outPath, "speedarr.rds"))
   
   
   # Analyse activity automated fo# saveRDS(speedarr, paste0(outPath, "speedarr.rds"))
 
 # 
 # #Load speedaar that was created earlier
-# speedarr <- readRDS(paste0(outPath, "speedarr.rds"))
+speedarr <- readRDS(paste0(outPath, "speedarr.rds"))
 
 # Analyse activity automated fo
 
@@ -71,9 +71,9 @@ tps <- rbindlist(lapply(paste0(outPath, "tp_", yearsToSubmit, ".rds"), readRDS))
 # (will pop up). Closing the data editor will save data automatically.
 # For this, you can use the speed histograms saved in the plotPath
 # One decimal is precise enough
-fix(speedarr)
-
-saveRDS(speedarr, paste0(outPath, "speedarr.rds"))
+# fix(speedarr)
+# 
+# saveRDS(speedarr, paste0(outPath, "speedarr.rds"))
 
 
 #'----------------------------------------------------------------------------
@@ -97,15 +97,14 @@ for(year in yearsToSubmit){
   tacsatp <- readRDS(paste0(outPath, "tacsatp_", year, ".rds"))
   load(file = paste0(outPath,paste0("/cleanEflalo",year,".RData")) )
   
-  if(!all(tacsatp$LE_SEG %in% speedarr$LE_SEG))
-    stop(paste("There is no speed filter for the segement(s):", MIS_SEG), collapse = ", ")
+  eflalo <- eflalo[eflalo$LE_MET %in% valid_metiers,]
   
-  #'----------------------------------------------------------------------------
+   #'----------------------------------------------------------------------------
   # 2.3.1 continued, filter out invalid metier level 6 codes                           
   #'----------------------------------------------------------------------------
     kept <- nrow(tacsatp)
-    removed <- nrow(tacsatp %>% filter(LE_MET %!in% m6_ices$Key))
-    tacsatp <- tacsatp %>% filter(LE_MET %in% m6_ices$Key)
+    removed <- nrow(tacsatp %>% filter(LE_MET %!in% valid_metiers))
+    tacsatp <- tacsatp %>% filter(LE_MET %in% valid_metiers)
     cat(sprintf("%.2f%% of of the tacsatp removed due to invalid metier l6 \n", (removed / (removed + kept) * 100)))
   
   #'----------------------------------------------------------------------------
@@ -157,40 +156,9 @@ for(year in yearsToSubmit){
   
   message(sprintf("%.2f%% of the eflalo data not in tacsat\n", (nrow(eflaloNM) / (nrow(eflaloNM) + nrow(eflaloM))) * 100))
   
-  # Filter rows where SI_STATE is 1
-  tacsatEflalo <- tacsatp[tacsatp$SI_STATE == 1,] # This is not yet merged data, just named tacsatEflalo
-  
-  # Check the type of linking required and call splitAmongPings accordingly
-  if (!"trip" %in% linkEflaloTacsat) stop("trip must be in linkEflaloTacsat")
-  
-  if (all(c("day", "ICESrectangle", "trip") %in% linkEflaloTacsat)) {
-    level <- "day"
-    tmpTa <- tacsatp
-    tmpEf <- eflaloM
-  } else if (all(c("day","trip") %in% linkEflaloTacsat) & !"ICESrectangle" %in% linkEflaloTacsat) {
-    level <- "day"
-    tmpTa <- tacsatp
-    tmpEf <- eflaloM
-    tmpTa$LE_RECT <- "ALL"
-    tmpEf$LE_RECT <- "ALL"
-  } else if (all(c("ICESrectangle", "trip") %in% linkEflaloTacsat) & !"day" %in% linkEflaloTacsat) {
-    level <- "ICESrectangle"
-    tmpTa <- tacsatp
-    tmpEf <- eflaloM
-  } else if (linkEflaloTacsat == "trip" & length(linkEflaloTacsat) == 1) {
-    level <- "trip"
-    tmpTa <- tacsatp
-    tmpEf <- eflaloM
-  }
-  
-  tacsatEflalo <- splitAmongPings(
-    tacsat = tmpTa,
-    eflalo = tmpEf,
-    variable = "all",
-    level = level,
-    conserve = level != "trip"
-  )
-  
+
+  # Distribute landings among pings, first by day, metier and trip; then by metier and trip; then by trip
+  tacsatEflalo <- splitAmongPings2(tacsatp, eflalo)
   
   print("Dispatching landings completed")
   
@@ -207,14 +175,14 @@ for(year in yearsToSubmit){
     file = file.path(outPath, paste0("/cleanEflalo", year, ".RData"))
   )
 
+  print("")
   
 }
 
 
 # Housekeeping
-rm(his, speedarr, tacsatp, tacsatEflalo,
-   tmpEf, tmpTa, tps,
-   eflalo, eflaloM, eflaloNM)
+rm(speedarr, tacsatp, tacsatEflalo,
+   tps, eflalo, eflaloM, eflaloNM)
 
 #'------------------------------------------------------------------------------
 # End of script                                                             
