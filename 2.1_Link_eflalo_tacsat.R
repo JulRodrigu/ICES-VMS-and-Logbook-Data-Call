@@ -92,9 +92,11 @@ for(year in yearsToSubmit){
   tacsatp <- intvTacsat(tacsatp, level = "trip", fill.na = TRUE)
   
   # Reset values that are simply too high to 2x the regular interval rate  
-  tacsatp$INTV[tacsatp$INTV > intvThres | is.na(tacsatp$INTV)] <- 2 * intvThres
+  tacsatp$INTV[tacsatp$INTV > intvThres ] <- 2 * intvThres
   
-  
+  # Assume that pings with NA in INTV has the normal interval value
+  tacsatp$INTV[is.na(tacsatp$INTV)] <- intvThres
+ 
   # Remove points with NA's in them in critical places
   idx <-
     which(
